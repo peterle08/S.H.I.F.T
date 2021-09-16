@@ -1,0 +1,35 @@
+<!-- base html for extension -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/df6a53a56c.js" crossorigin="anonymous"></script>
+    </style>
+
+    {% if title %}
+        <title>{{ title }} - S.H.I.F.T</title>
+    {% else %}
+        <title>Welcome to S.H.I.F.T</title>
+    {% endif %}
+</head>
+
+<body>
+    <header>
+    </header>
+
+<!-- Body Extension part-->
+    {% block content %}{% endblock %}
+    <footer>
+        &copy; {{year}} by Chase Beetler, Cieara Pfeifer, Hoang Le, Jayden Stearns, Kevin Jarrells, Vanessa Sanders
+        
+    </footer>
+</body>
+<!-- Script Extension part-->
+{% block script %} {% endblock %}
+
+</html>
