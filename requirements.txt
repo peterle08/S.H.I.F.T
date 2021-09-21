@@ -1,3 +1,4 @@
+APScheduler==3.7.0
 blinker==1.4
 click==8.0.1
 colorama==0.4.4
@@ -16,6 +17,9 @@ MarkupSafe==2.0.1
 mysql-connector==2.2.9
 PyJWT==2.1.0
 PyMySQL==1.0.2
+pytz==2021.1
+six==1.16.0
 SQLAlchemy==1.4.23
+tzlocal==2.1
 Werkzeug==2.0.1
 WTForms==2.3.3
