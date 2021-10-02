@@ -1,0 +1,12 @@
+{% if current_user.is_authenticated: %}
+    {% extends "/base/auth.html" %}
+{% else: %}
+    {% extends "/base/public.html" %}
+{% endif %}
+
+{% block content %}
+<div class="container">
+    <h1 style="text-align: center;">404: Not Found</h1>
+
+</div>
+{% endblock %}
