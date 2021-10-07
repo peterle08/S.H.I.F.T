@@ -21,8 +21,8 @@ def appointment():
     events = [
         {
             'title' : 'Employee 1',
-            'start' : '2021-09-23',
-            'end' : '2021-09-23'
+            'start' : '2021-10-05',
+            'end' : '2021-10-05'
         },
         {
             'title' : 'Employee 2',

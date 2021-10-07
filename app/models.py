@@ -17,11 +17,11 @@ def load_user(id):
 class User(UserMixin, db.Model):
     __tablename__ = "user"
     # Columns
-    id = db.Column(db.String(15), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     status = db.Column(db.String(20), nullable=False)
-    profile_id = db.Column(db.String(15), nullable=False)
+    profile_id = db.Column(db.Integer, nullable=False)
     
     # relationship
     role = db.relationship("Role", back_populates="user")
@@ -31,7 +31,7 @@ class User(UserMixin, db.Model):
 class Role(UserMixin, db.Model):
     __tablename__ = "role"
     # Columns
-    user_id = db.Column(db.String(15), db.ForeignKey('user.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     name = db.Column(db.String(25))
 
     user = db.relationship("User", back_populates="role")
@@ -39,15 +39,14 @@ class Role(UserMixin, db.Model):
 class Setting(UserMixin, db.Model):
     __tablename__ = "setting"
     # Columns
-    user_id = db.Column(db.String(15), db.ForeignKey('user.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     mode = db.Column(db.String(25))
-
     user = db.relationship("User", back_populates="setting")
 
 class Profile(UserMixin, db.Model):
     __tablename__ = "profile"
     # Columns
-    id = db.Column(db.String(15), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     middle_name = db.Column(db.String(100))
@@ -60,8 +59,6 @@ class Profile(UserMixin, db.Model):
     state = db.Column(db.String(10))
     zip_code = db.Column(db.String(4))
     
-    # constraints
-    user_id = db.Column(db.String(15), db.ForeignKey('user.id'))
     # relationship
     employee = db.relationship("Employee", back_populates="profile", uselist=False)
     student = db.relationship("Student", back_populates="profile", uselist=False)
@@ -73,8 +70,8 @@ class Student(UserMixin, db.Model):
     __tablename__ = "student"
 
     id = db.Column(db.String(15), primary_key=True)
-    department_id = db.Column(db.String(15), db.ForeignKey('profile.id'))
-    profile_id = db.Column(db.String(15), db.ForeignKey('profile.id'))
+    department_id = db.Column(db.String(15), db.ForeignKey('department.id'))
+    profile_id = db.Column(db.Integer, db.ForeignKey('profile.id'))
 
     # relationship
     profile = db.relationship("Profile", back_populates="student")
@@ -159,7 +156,7 @@ class Employee(UserMixin, db.Model):
     id = db.Column(db.String(15), primary_key=True)
     wage = db.Column(db.Numeric(10,2))
     supervisor_id = db.Column(db.String(15), db.ForeignKey('supervisor.id'))
-    profile_id = db.Column(db.String(15), db.ForeignKey('profile.id')) 
+    profile_id = db.Column(db.Integer, db.ForeignKey('profile.id')) 
     department_id = db.Column(db.String(15), db.ForeignKey('department.id'))
     
     #Relationships
