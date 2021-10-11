@@ -5,16 +5,31 @@ from werkzeug.urls import url_parse
 import json
 
 from datetime import datetime, timedelta, timezone
+from app.classes import Function
 
-# from app.forms import LoginForm
+from app.forms import LoginForm
 from app.email import Email
 from app import app
 
 
-@app.route('/')
 @app.route('/home')
-def index():
+def home():
     return "Home <h1><b>muahahahahahaah</b></h1>"
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    Function.get_started()
+    form = LoginForm()
+    if form.validate_on_submit():
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('home')
+        return redirect(next_page)
+    return render_template('/user/login.html', title="Log In", year=datetime.now().year, form=form)
+
 
 @app.route('/cal')
 def appointment():
@@ -36,7 +51,3 @@ def appointment():
         },
     ]
     return render_template('calendar/appointment.html', title="Appointment", mycal=events)
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    return render_template('/user/login.html', title="Log In", year=datetime.now().year)
