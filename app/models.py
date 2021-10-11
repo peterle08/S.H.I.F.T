@@ -21,7 +21,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     status = db.Column(db.String(20), nullable=False)
-    profile_id = db.Column(db.Integer, nullable=False)
+    profile_id = db.Column(db.Integer, db.ForeignKey('profile.id'), nullable=False)
     
     # relationship
     role = db.relationship("Role", back_populates="user")
@@ -101,7 +101,6 @@ class Appointment(UserMixin, db.Model):
     # relationship
     student = db.relationship("Student", back_populates="appointment")
     employee = db.relationship("Employee", back_populates="appointment")
-    appointment = db.relationship("Appointment", back_populates="appointment")
 
 class Walkin(UserMixin, db.Model):
     __tablename__ = "walkin"
@@ -119,7 +118,7 @@ class Walkin(UserMixin, db.Model):
     # relationship
     student = db.relationship("Student", back_populates="walkin")
     employee = db.relationship("Employee", back_populates="walkin")
-    appointment = db.relationship("Appointment", back_populates="walkin")
+    department = db.relationship("Department", back_populates="walkin")
 
 class Course(UserMixin, db.Model):
     __tablename__ = "course"
@@ -161,20 +160,32 @@ class Employee(UserMixin, db.Model):
 
     id = db.Column(db.String(15), primary_key=True)
     wage = db.Column(db.Numeric(10,2))
-    supervisor_id = db.Column(db.String(15), db.ForeignKey('supervisor.id'))
     profile_id = db.Column(db.Integer, db.ForeignKey('profile.id')) 
     department_id = db.Column(db.String(15), db.ForeignKey('department.id'))
     
     #Relationships
     profile = db.relationship("Profile", back_populates="employee", uselist=False)
-    appointment = db.relationship("Walkin", back_populates="employee")
+    appointment = db.relationship("Appointment", back_populates="employee")
     walkin = db.relationship("Walkin", back_populates="employee")
     department = db.relationship("Department", back_populates="employee")
     supervisor = db.relationship("Supervisor", back_populates="employee")
+    supervise = db.relationship("Supervise", back_populates="employee")
     tutor = db.relationship("Tutor", back_populates="employee")
-    limit = db.relationship("Walkin", back_populates="employee")
-    shift = db.relationship("Walkin", back_populates="employee")
-    swap = db.relationship("Walkin", back_populates="employee")
+    limit = db.relationship("Limit", back_populates="employee")
+    shift = db.relationship("Shift", back_populates="employee")
+    swap = db.relationship("Swap", back_populates="employee")
+
+class Supervise(UserMixin, db.Model):
+    __tablename__ = "supervise"
+
+    supervisor_id = db.Column(db.String(15), db.ForeignKey('supervisor.id'))
+    employee_id = db.Column(db.String(15), db.ForeignKey('employee.id'))
+
+    __table_args__ = (db.PrimaryKeyConstraint('supervisor_id', 'employee_id'),)
+
+    # relationship
+    employee = db.relationship("Employee", back_populates="supervise")
+    supervisor = db.relationship("Supervisor", back_populates="supervise")
 
 class Supervisor(UserMixin, db.Model):
     __tablename__ = "supervisor"
@@ -182,6 +193,7 @@ class Supervisor(UserMixin, db.Model):
     id = db.Column(db.String(15), db.ForeignKey('employee.id'), primary_key=True)
     # relationship
     employee = db.relationship("Employee", back_populates="supervisor")
+    supervise = db.relationship("Supervise", back_populates="supervisor")
 
 class Limit(UserMixin, db.Model):
     __tablename__ = "limit"
@@ -211,7 +223,7 @@ class Swap(UserMixin, db.Model):
     __tablename__ = "swap"
 
     requester_id = db.Column(db.String(15), db.ForeignKey('employee.id'))
-    accepter_id = db.Column(db.String(15), db.ForeignKey('employee.id'))
+    accepter_id = db.Column(db.String(15))
     from_date = db.Column(db.Date(), index=True, nullable=False)
     from_time = db.Column(db.Time(), nullable=False)
     to_date = db.Column(db.Date(), nullable=False)
