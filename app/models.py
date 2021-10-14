@@ -34,6 +34,12 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password,password)
 
+    def is_authorized(self, user_role):
+        return user_role == (Role.query.filter_by(user_id=self.id).first()).name
+
+    def __repr__(self):
+        return '<User {}>'.format([self.id, self.username, self.status])
+
 class Role(UserMixin, db.Model):
     __tablename__ = "role"
     # Columns
@@ -42,12 +48,20 @@ class Role(UserMixin, db.Model):
 
     user = db.relationship("User", back_populates="role")
 
+    def __repr__(self):
+        return '<Role {}>'.format([self.user_id, self.name])
+
 class Setting(UserMixin, db.Model):
     __tablename__ = "setting"
     # Columns
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     mode = db.Column(db.String(25))
+
+    # Relationship
     user = db.relationship("User", back_populates="setting")
+
+    def __repr__(self):
+        return '<Setting {}>'.format([self.user_id, self.mode, self.status])
 
 class Profile(UserMixin, db.Model):
     __tablename__ = "profile"
@@ -70,6 +84,9 @@ class Profile(UserMixin, db.Model):
     student = db.relationship("Student", back_populates="profile", uselist=False)
     user = db.relationship("User", back_populates="profile", uselist=False)
 
+    def __repr__(self):
+        return '<Profile {}>'.format([self.id, self.first_name, self.last_name, self.phone, self.email])
+    
 ###########################################
 #========== Tutor Support System ==========
 class Student(UserMixin, db.Model):
@@ -86,6 +103,9 @@ class Student(UserMixin, db.Model):
     appointment = db.relationship("Appointment", back_populates="student")
     walkin = db.relationship("Walkin", back_populates="student")
 
+    def __repr__(self):
+        return '<Student {}>'.format([self.id, self.department_id, self.profile_id])
+
 class Appointment(UserMixin, db.Model):
     __tablename__ = "appointment"
 
@@ -101,6 +121,9 @@ class Appointment(UserMixin, db.Model):
     # relationship
     student = db.relationship("Student", back_populates="appointment")
     employee = db.relationship("Employee", back_populates="appointment")
+
+    def __repr__(self):
+        return '<Appointment {}>'.format([self.student_id, self.date, self.start_time])
 
 class Walkin(UserMixin, db.Model):
     __tablename__ = "walkin"
@@ -120,12 +143,18 @@ class Walkin(UserMixin, db.Model):
     employee = db.relationship("Employee", back_populates="walkin")
     department = db.relationship("Department", back_populates="walkin")
 
+    def __repr__(self):
+        return '<Walkin {}>'.format([self.student_id, self.date, self.start_time])
+
 class Course(UserMixin, db.Model):
     __tablename__ = "course"
     id = db.Column(db.String(15), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     # relationship
     tutor = db.relationship("Tutor", back_populates="course")
+
+    def __repr__(self):
+        return '<Course {}>'.format([self.id, self.name])
 
 ###########################################
 #========== Employee System ==========
@@ -142,6 +171,9 @@ class Tutor(UserMixin, db.Model):
     course = db.relationship("Course", back_populates="tutor")
     student = db.relationship("Student", back_populates="tutor")
 
+    def __repr__(self):
+        return '<Tutor {}>'.format([self.student_id, self.employee_id, self.course_id])
+
 class Department(UserMixin, db.Model):
     __tablename__ = "department"
     
@@ -154,6 +186,9 @@ class Department(UserMixin, db.Model):
     walkin = db.relationship("Walkin", back_populates="department")
     employee = db.relationship("Employee", back_populates="department")
     student = db.relationship("Student", back_populates="department")
+
+    def __repr__(self):
+        return '<Department {}>'.format([self.id, self.name, self.building])
 
 class Employee(UserMixin, db.Model):
     __tablename__ = "employee"
@@ -175,6 +210,9 @@ class Employee(UserMixin, db.Model):
     shift = db.relationship("Shift", back_populates="employee")
     swap = db.relationship("Swap", back_populates="employee")
 
+    def __repr__(self):
+        return '<Employee {}>'.format([self.id, self.profile_id, self.department_id])
+
 class Supervise(UserMixin, db.Model):
     __tablename__ = "supervise"
 
@@ -187,6 +225,9 @@ class Supervise(UserMixin, db.Model):
     employee = db.relationship("Employee", back_populates="supervise")
     supervisor = db.relationship("Supervisor", back_populates="supervise")
 
+    def __repr__(self):
+        return '<Supervise {}>'.format([self.supervisor_id, self.employee_id])
+
 class Supervisor(UserMixin, db.Model):
     __tablename__ = "supervisor"
 
@@ -195,6 +236,9 @@ class Supervisor(UserMixin, db.Model):
     employee = db.relationship("Employee", back_populates="supervisor")
     supervise = db.relationship("Supervise", back_populates="supervisor")
 
+    def __repr__(self):
+        return '<Supervisor {}>'.format([self.id])
+
 class Limit(UserMixin, db.Model):
     __tablename__ = "limit"
 
@@ -202,6 +246,9 @@ class Limit(UserMixin, db.Model):
     weekly_hours = db.Column(db.Numeric(10,2))
     # relationship
     employee = db.relationship("Employee", back_populates="limit")
+
+    def __repr__(self):
+        return '<Limit {}>'.format([self.employee_id])
 
 ###########################################
 #========== Employee System ==========
@@ -219,6 +266,9 @@ class Shift(UserMixin, db.Model):
     # relationship
     employee = db.relationship("Employee", back_populates="shift")
 
+    def __repr__(self):
+        return '<Shift {}>'.format([self.employee_id, self.date, self.start_time, self.end_time, self.status])
+
 class Swap(UserMixin, db.Model):
     __tablename__ = "swap"
 
@@ -234,3 +284,6 @@ class Swap(UserMixin, db.Model):
 
     # relationship
     employee = db.relationship("Employee", back_populates="swap")
+
+    def __repr__(self):
+        return '<Swap {}>'.format([self.requester_id, self.accepter_id, self.from_date, self.from_time, self.to_date, self.to_time])
