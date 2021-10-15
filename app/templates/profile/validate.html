@@ -1,0 +1,59 @@
+{% extends "/base/auth.html" %}
+
+{% block content %}
+<div class="container">
+    <h3>Validate Profile</h3>
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-inline">
+            {{ form.email(class="form-control m-2", placeholder="email") }}
+        </div>
+        <hr>
+    {% if profile != None and email %}
+        <div class="form-group">
+            {{ form.first_name(class="form-control m-2", placeholder="First Name") }}
+        </div>
+        <div class="form-group">
+            {{ form.last_name(class="form-control m-2", placeholder="Last Name") }}
+        </div>
+        <div class="form-group">
+            {{ form.middle_name(class="form-control m-2", placeholder="Middle Name") }}
+        </div>
+        <div class="form-group">
+            {{ form.preferred_name(class="form-control m-2", placeholder="Preferred Name") }}
+        </div>
+        <div class="form-group">
+            {{ form.gender(class="form-control m-2") }}
+        </div>
+        <div class="form-group">
+            {{ form.phone(class="form-control m-2", placeholder="Phone Number") }}
+        </div>
+        <div class="form-group">
+            {{ form.address(class="form-control m-2", placeholder="Address") }}
+        </div>
+        <div class="form-group">
+            {{ form.city(class="form-control m-2", placeholder="City") }}
+        </div>
+        <div class="form-group">
+            {{ form.state(class="form-control m-2", placeholder="State") }}
+        </div>
+        <div class="form-group">
+            {{ form.zip_code(class="form-control m-2", placeholder="Zip Code") }}
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-outline-primary">Insert Profile</button>
+        </div>
+    {% else %}
+        <div class="form-group">
+            <button type="submit" class="btn btn-outline-primary">Verify</button>
+        </div>
+    {% endif %}
+
+    </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

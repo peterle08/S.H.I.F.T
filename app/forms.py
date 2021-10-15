@@ -21,3 +21,33 @@ class LoginForm(FlaskForm):
                 ValidationError('Sorry, Your account has been terminated! Please contact the Admin to get more information')
         else:
             raise ValidationError('Invalid username or password! Please try again!')
+
+class ProfileForm(FlaskForm):
+    first_name = StringField('First Name', validators=[DataRequired()])
+    last_name = StringField('Last Name', validators=[DataRequired()])
+    middle_name = StringField('Middle Name')
+    preferred_name = StringField('Preferred Name')
+    gender =  SelectField("Gender",  validators=[DataRequired()], choices=[('m', 'Male'), ('f', 'Female'), ('o', 'others')])
+    phone = StringField('Phone Number', validators=[DataRequired(), length(min=10, max=15)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    address = StringField('Address', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    state = StringField('State', validators=[DataRequired()])
+    zip_code = StringField('Zip Code', validators=[DataRequired(), length(min=5, max=5)])
+
+    def validate_email(self, email):
+        if Fetch.profile_by_email(email.data):
+            raise ValidationError("Existing Email | Profile")
+
+    def validate_phone(self, phone):
+        if (phone.data).isnumeric() == False:
+            raise ValidationError("Number only")
+
+class AddUserForm(FlaskForm):
+    # need modified
+    username = StringField('Username', validators=[DataRequired()], render_kw={'autofocus': True})
+
+    def validate_username(self, username):
+        user = Fetch.user_by_username(username.data)
+        if user:
+            raise ValidationError('Invalid username or password! Please try again!')

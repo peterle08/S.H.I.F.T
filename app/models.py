@@ -77,7 +77,7 @@ class Profile(UserMixin, db.Model):
     address = db.Column(db.String(255))
     city = db.Column(db.String(100))
     state = db.Column(db.String(10))
-    zip_code = db.Column(db.String(4))
+    zip_code = db.Column(db.String(5))
     
     # relationship
     employee = db.relationship("Employee", back_populates="profile", uselist=False)
