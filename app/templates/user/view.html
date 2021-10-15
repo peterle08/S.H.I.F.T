@@ -1,0 +1,23 @@
+{% extends "/base/auth.html" %}
+
+{% block content %}
+<div class="container">
+    <a href="{{url_for('validate_profile')}}" class="btn btn-outline-info">New User</a>
+    <table class="table">
+        <tbody>
+            {% for user in users: %}
+            <tr>
+                <td>{{user.username}}</td>
+                <td>{{user.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

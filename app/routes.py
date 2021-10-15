@@ -1,15 +1,15 @@
+import re
 from flask import render_template, redirect, url_for, request, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
-import json
-
 from datetime import datetime, timedelta
-from app.classes import Function
+from app.classes import Fetch, Function, Insert
 
-from app.forms import LoginForm
+from app.forms import LoginForm, ProfileForm, AddUserForm
 from app.email import Email
 from app import app
+from app.models import User, Department
 
 
 #_________________________________
@@ -42,10 +42,81 @@ def logout():
 # Login-required: yes
 # parameter:
 # Description: dashboard
-@app.route('/<user_id>/dashboard')
-def dashboard(user_id):
+@app.route('/dashboard')
+@login_required
+def dashboard():
     return render_template('/dashboard/main.html', title="Dashboard", year=datetime.now().year)
 
+#============================== Department =================================
+# Login-required: yes
+# parameter:
+# role:
+# Description: View Department
+@app.route('/departments/view')
+def view_department():
+    if current_user.is_authorized("admin") == False: return 404
+    deparments = Department.query.all()
+    return render_template('/department/view.html', title="View Department", deparments=deparments)
+
+
+#============================== Profile & User ==============================
+
+# Login-required: yes
+# parameter:
+# role:
+# Description: Add Employee
+@app.route('/profile/validate', methods=['GET', 'POST'])
+@login_required
+def validate_profile():
+    if current_user.is_authorized("admin") == False: return 404
+    form = ProfileForm()
+    profile = None
+    email = None
+    if request.method == "POST":    # no form validation 
+        profile = Fetch.profile_by_email(form.email.data)
+        if profile == None:
+            email = form.email.data
+            if form.validate_on_submit():
+                Insert.profile(form)
+                profile = Fetch.profile_by_email(form.email.data)
+                return redirect(url_for('add_user', profile_id=profile.id))
+        else:
+            return redirect(url_for('add_user', profile_id=profile.id))
+
+    return render_template('/profile/validate.html', title="Verify Profile", form=form, email=email)
+
+#_________________________________
+# Login-required: yes
+# parameter:
+# role:
+# Description: Add Employee
+@app.route('/<profile_id>/user/add',methods=['GET', 'POST'])
+@login_required
+def add_user(profile_id):
+    if current_user.is_authorized("admin") == False: return 404
+    form = AddUserForm()
+    
+    return render_template('/user/add.html', title="Add User", form=form)
+
+
+#_________________________________
+# Login-required: yes
+# parameter:
+# role:
+# Description: Add Employee
+@app.route('/users/view',methods=['GET', 'POST'])
+@login_required
+def view_user():
+    if current_user.is_authorized("admin") == False: return 404
+    users = User.query.all()
+    return render_template('/user/view.html', title="View Users", users=users)
+
+#============================== Student  ===================================
+
+#_________________________________
+# Login-required: yes
+# parameter:
+# Description: view Appointment
 @app.route('/<user_id>/appointment')
 def appointment(user_id):
     events = [
@@ -66,3 +137,4 @@ def appointment(user_id):
         },
     ]
     return render_template('calendar/appointment.html', title="Appointment", mycal=events)
+
