@@ -60,7 +60,17 @@ def view_department():
 
 
 #============================== Profile & User ==============================
-
+#_________________________________
+# Login-required: yes
+# parameter:
+# role:
+# Description: View users
+@app.route('/users/view',methods=['GET', 'POST'])
+@login_required
+def view_user():
+    if current_user.is_authorized("admin") == False: abort(404)
+    users = User.query.all()
+    return render_template('/user/view.html', title="View Users", users=users)
 #_________________________________
 # Login-required: yes
 # parameter:
