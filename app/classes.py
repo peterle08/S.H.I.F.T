@@ -4,7 +4,7 @@
 from os import stat_result
 import string
 import random
-from app.models import Student, User, Profile, Setting, Role, Employee
+from app.models import Student, User, Profile, Setting, Role, Employee, Walkin
 from app import db
 
 class Function:
@@ -63,4 +63,10 @@ class Insert:
     
     def employee(id, department_id, wage, profile_id):
         db.session.add(Employee(id=id, department_id=department_id, profile_id=profile_id, wage=wage))
+        db.session.commit()
+    
+    def walkin(department_id, student_id, purpose, time_stamp, status, employee_id):
+        db.session.add(Walkin(department_id=department_id, student_id=student_id, purpose=purpose,
+                                time_stamp=time_stamp, status=status, employee_id=employee_id
+                        ))
         db.session.commit()

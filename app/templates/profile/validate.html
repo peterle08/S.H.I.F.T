@@ -6,7 +6,11 @@
     <form action="" method="POST">
         {{ form.hidden_tag() }}
         <div class="form-inline">
+        {% if email %}
+            {{ form.email(class="form-control m-2", placeholder="email", value=email) }}
+        {% else: %}
             {{ form.email(class="form-control m-2", placeholder="email") }}
+        {% endif %}
         </div>
         <hr>
     {% if profile != None and email %}

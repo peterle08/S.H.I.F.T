@@ -56,9 +56,13 @@ class User(UserMixin, db.Model):
 class Role(UserMixin, db.Model):
     __tablename__ = "role"
     # Columns
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     name = db.Column(db.String(25))
 
+    __table_args__ = (db.PrimaryKeyConstraint('user_id', 'name'),)
+
+
+    # relationship
     user = db.relationship("User", back_populates="role")
 
     def __repr__(self):
