@@ -50,4 +50,4 @@ class AddUserForm(FlaskForm):
     def validate_username(self, username):
         user = Fetch.user_by_username(username.data)
         if user:
-            raise ValidationError('Invalid username or password! Please try again!')
+            raise ValidationError('Existing username')
