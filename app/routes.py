@@ -54,13 +54,14 @@ def dashboard():
 # Description: View Department
 @app.route('/departments/view')
 def view_department():
-    if current_user.is_authorized("admin") == False: return 404
+    if current_user.is_authorized("admin") == False: return 403
     deparments = Department.query.all()
     return render_template('/department/view.html', title="View Department", deparments=deparments)
 
 
 #============================== Profile & User ==============================
 
+#_________________________________
 # Login-required: yes
 # parameter:
 # role:
@@ -68,7 +69,7 @@ def view_department():
 @app.route('/profile/validate', methods=['GET', 'POST'])
 @login_required
 def validate_profile():
-    if current_user.is_authorized("admin") == False: return 404
+    if current_user.is_authorized("admin") == False: return 403
     form = ProfileForm()
     profile = None
     email = None
@@ -93,7 +94,7 @@ def validate_profile():
 @app.route('/<profile_id>/user/add',methods=['GET', 'POST'])
 @login_required
 def add_user(profile_id):
-    if current_user.is_authorized("admin") == False: return 404
+    if current_user.is_authorized("admin") == False: return 403
     form = AddUserForm()
     
     return render_template('/user/add.html', title="Add User", form=form)
@@ -107,7 +108,7 @@ def add_user(profile_id):
 @app.route('/users/view',methods=['GET', 'POST'])
 @login_required
 def view_user():
-    if current_user.is_authorized("admin") == False: return 404
+    if current_user.is_authorized("admin") == False: return 403
     users = User.query.all()
     return render_template('/user/view.html', title="View Users", users=users)
 
