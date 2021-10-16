@@ -10,7 +10,7 @@ class Email:
                             sender = "support@vnsboard.com",
                             recipients=[email]
                         )
-            msg.body = "Hi " + first_name + ",\nYour Account Information:\username: " + username + "\nPassword: " + password
+            msg.body = "Hi " + first_name + ",\nYour Account Information:\nusername: " + username + "\nPassword: " + password
             mail.send(msg)
         except:
             pass

@@ -1,5 +1,5 @@
 import re
-from flask import render_template, redirect, url_for, request, jsonify
+from flask import render_template, redirect, url_for, request, jsonify, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
@@ -9,7 +9,7 @@ from app.classes import Fetch, Function, Insert
 from app.forms import LoginForm, ProfileForm, AddUserForm
 from app.email import Email
 from app import app
-from app.models import User, Department
+from app.models import User, Department, Student, Role, Employee
 
 
 #_________________________________
@@ -54,7 +54,7 @@ def dashboard():
 # Description: View Department
 @app.route('/departments/view')
 def view_department():
-    if current_user.is_authorized("admin") == False: return 403
+    if current_user.is_authorized("admin") == False: abort(404)
     deparments = Department.query.all()
     return render_template('/department/view.html', title="View Department", deparments=deparments)
 
@@ -66,10 +66,8 @@ def view_department():
 # parameter:
 # role:
 # Description: Add Employee
-@app.route('/profile/validate', methods=['GET', 'POST'])
-@login_required
-def validate_profile():
-    if current_user.is_authorized("admin") == False: return 403
+@app.route('/<position>/profile/validate', methods=['GET', 'POST'])
+def validate_profile(position):
     form = ProfileForm()
     profile = None
     email = None
@@ -80,39 +78,64 @@ def validate_profile():
             if form.validate_on_submit():
                 Insert.profile(form)
                 profile = Fetch.profile_by_email(form.email.data)
-                return redirect(url_for('add_user', profile_id=profile.id))
+                if position == "student":
+                    return redirect(url_for('student', profile_id=profile.id))
+                elif position == "employee":
+                    return redirect(url_for('employee', profile_id=profile.id))
         else:
             return redirect(url_for('add_user', profile_id=profile.id))
 
     return render_template('/profile/validate.html', title="Verify Profile", form=form, email=email)
 
+#==============================   Student       ==============================
+
 #_________________________________
 # Login-required: yes
-# parameter:
-# role:
-# Description: Add Employee
-@app.route('/<profile_id>/user/add',methods=['GET', 'POST'])
+# parameter: profile_id
+# role: any
+# Description: Add student, Add user, add role
+@app.route('/<int:profile_id>/student/add',methods=['GET', 'POST'])
 @login_required
-def add_user(profile_id):
-    if current_user.is_authorized("admin") == False: return 403
+def add_student(profile_id):
     form = AddUserForm()
-    
-    return render_template('/user/add.html', title="Add User", form=form)
+    departments = Department.query.all()
+    student = Student.query.filter_by(profile_id=profile_id).first()
+    user = User.query.filter_by(profile_id=profile_id).first()
+    if request.method == "POST":
+        if user == None and form.validate_on_submit():
+            password = Function.random_password()
+            Insert.user(form.username.data, password, profile_id)
+            user = Fetch.user_by_username(form.username.data)
+        if student == None:
+            Insert.student(request.form.get('student_id'), request.form.get('department_id'), profile_id)
+        if Role.query.filter_by(user_id=user.id, name="student").first() == None:
+            Insert.role(user.id, "student")
+        # redirect to??
+    return render_template('/student/add.html', title="Add User", form=form, departments=departments, student=student, user=user)
 
-
-#_________________________________
+#============================== Employee  ===================================
 # Login-required: yes
-# parameter:
-# role:
-# Description: Add Employee
-@app.route('/users/view',methods=['GET', 'POST'])
+# parameter:profile_id
+# role: any
+# Description: Add employee, Add user, add role
+@app.route('/<int:profile_id>/employee/add',methods=['GET', 'POST'])
 @login_required
-def view_user():
-    if current_user.is_authorized("admin") == False: return 403
-    users = User.query.all()
-    return render_template('/user/view.html', title="View Users", users=users)
-
-#============================== Student  ===================================
+def add_employee(profile_id):
+    form = AddUserForm()
+    departments = Department.query.all()
+    employee = Employee.query.filter_by(profile_id=profile_id).first()
+    user = User.query.filter_by(profile_id=profile_id).first()
+    if request.method == "POST":
+        if user == None and form.validate_on_submit():
+            password = Function.random_password()
+            Insert.user(form.username.data, password, profile_id)
+            user = Fetch.user_by_username(form.username.data)
+        if employee == None:
+            Insert.employee(request.form.get('employee_id'), request.form.get('department_id'), request.form.get('wage'), profile_id)
+        if Role.query.filter_by(user_id=user.id, name="employee").first() == None:
+            Insert.role(user.id, "employee")
+        # redirect to????
+    return render_template('/employee/add.html', title="Add User", form=form, departments=departments, employee=employee, user=user)
 
 #_________________________________
 # Login-required: yes
