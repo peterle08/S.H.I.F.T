@@ -3,7 +3,7 @@ from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextA
 
 from wtforms.validators import InputRequired, DataRequired, ValidationError, Email, EqualTo, length
 from flask_login import current_user, login_user
-from app.models import Role
+from app.models import User
 from app.classes import Fetch
 
 class LoginForm(FlaskForm):
@@ -51,3 +51,8 @@ class AddUserForm(FlaskForm):
         user = Fetch.user_by_username(username.data)
         if user:
             raise ValidationError('Existing username')
+
+class WalkinForm(FlaskForm):
+    # need modified
+    email = StringField('Username', validators=[DataRequired(), Email()], render_kw={'autofocus': True})
+    purpose = StringField('Purpose',)

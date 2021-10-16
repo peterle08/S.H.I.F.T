@@ -1,0 +1,27 @@
+{% extends "/base/public.html" %}
+
+{% block content %}
+<div class="container">
+    <h3>Welcome to Department of {{department.name}}</h3>
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.email(class="form-control", placeholder="Your Kent Email") }}
+    {% for error in form.email.errors %}
+        <span style="color: red;">{{ error }}</span>
+    {% endfor %}
+    <hr>
+    {% if student %}
+        {{ form.purpose(class="form-control", placeholder="Purpose of the visit") }}
+        <hr>
+    {% endif %}
+        <button class="btn btn-outline-primary" type="submit">Submit</button>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    
+</script>
+{% endblock %}

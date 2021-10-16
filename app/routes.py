@@ -3,10 +3,10 @@ from flask import render_template, redirect, url_for, request, jsonify, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from app.classes import Fetch, Function, Insert
 
-from app.forms import LoginForm, ProfileForm, AddUserForm
+from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm
 from app.email import Email
 from app import app
 from app.models import User, Department, Student, Role, Employee
@@ -66,11 +66,10 @@ def view_department():
 # parameter:
 # role:
 # Description: Add Employee
-@app.route('/<position>/profile/validate', methods=['GET', 'POST'])
-def validate_profile(position):
+@app.route('/<position>/profile/validate/<email>', methods=['GET', 'POST'])
+def validate_profile(position, email):
     form = ProfileForm()
     profile = None
-    email = None
     if request.method == "POST":    # no form validation 
         profile = Fetch.profile_by_email(form.email.data)
         if profile == None:
@@ -83,11 +82,29 @@ def validate_profile(position):
                 elif position == "employee":
                     return redirect(url_for('employee', profile_id=profile.id))
         else:
-            return redirect(url_for('add_user', profile_id=profile.id))
-
+            if position == "student":
+                return redirect(url_for('student', profile_id=profile.id))
+            elif position == "employee":
+                return redirect(url_for('employee', profile_id=profile.id))
     return render_template('/profile/validate.html', title="Verify Profile", form=form, email=email)
 
 #==============================   Student       ==============================
+@app.route('/<department_id>/walkin/start',methods=['GET', 'POST'])
+def start_walkin(department_id):
+    form = WalkinForm()
+    student = None
+    profile = None
+    department = Department.query.filter_by(id=department_id).first()
+    if form.validate_on_submit():
+        profile = Fetch.profile_by_email(form.email.data)
+        student = Student.query.filter_by(profile_id=profile.id).first()
+        if profile == None or student == None:
+            return redirect(url_for('validate_profile', position="student", email=form.email.data))
+        if form.purpose.data:
+            Insert.walkin(department_id, student.id, form.purpose.data, datetime.now(), "w", None)
+            return redirect(url_for('start_walkin', department_id=department_id))
+    return render_template('/walkin/start.html', title="Start Walkin", form=form, student=student, department=department)
+
 
 #_________________________________
 # Login-required: yes
@@ -95,7 +112,6 @@ def validate_profile(position):
 # role: any
 # Description: Add student, Add user, add role
 @app.route('/<int:profile_id>/student/add',methods=['GET', 'POST'])
-@login_required
 def add_student(profile_id):
     form = AddUserForm()
     departments = Department.query.all()
