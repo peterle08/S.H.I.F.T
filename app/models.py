@@ -34,8 +34,21 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password,password)
 
+    # verify role
     def is_authorized(self, user_role):
         return user_role == (Role.query.filter_by(user_id=self.id).first()).name
+
+    # create and verify user token
+    def generate_token(self, seconds=259200):
+        return jwt.encode({'generate_token': self.id, 'exp': time() + seconds}, app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+
+    @staticmethod
+    def verify_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['generate_token']
+        except:
+            return
+        return User.query.get(id)
 
     def __repr__(self):
         return '<User {}>'.format([self.id, self.username, self.status])

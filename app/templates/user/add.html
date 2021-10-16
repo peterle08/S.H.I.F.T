@@ -2,15 +2,74 @@
 
 {% block content %}
 <div class="container">
-    <h3>Welcome to S.H.I.F.T</h3>
+    <h3>Add User or New Roles</h3>
     <form action="" method="POST">
+    {% if user == None %}
         {{ form.hidden_tag() }}
+        {{ form.username(class="form-control", placeholder="Username") }}
 
+        {% for error in form.username.errors %}
+        <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+    {% else %}
+        <hr>
+        <label>Username: </label> {{user.username}}
+        <br>
+        <label>Status: </label> {{user.status}}
+    {% endif %}
+
+    {% if roles %}
+        <hr>
+        <h4>Current Roles: </h4>
+        <label>
+        {% for role in roles %}
+            {{role.name}},
+        {% endfor %}
+        </label>
+    {% endif %}
+        <hr>
+        <h4>Assign new roles?</h4>
+    {% for role in new_roles: %}
+        <div class="form-check">
+            <label class="form-check-label">
+            <input name="role" type="checkbox" class="form-check-input" value="{{role}}">{{role | title }}
+            </label>
+        </div>
+    {% endfor %}
+        <hr>
+        <h4>Required Data: </h4>
+        <div class="form-inline">
+            <label>Department: </label>
+            <select name="department_id" class="form-control">
+                <option value="" selected disabled>Select Department</option>
+            {% for department in departments %}
+                <option value="{{department.id}}">{{department.name}}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <div class="form-inline">
+            <label>Wage: </label>
+            <input name="wage" type="number" class="form-control" placeholder="Wage">            
+        </div>
+        <div class="form-inline">
+            <label for="supervisor">Supervisor: </label>
+            <Select name="supervisor_id" class="form-control">
+                <option value="" selected disabled>Optional</option>
+            {% for employee in employees %}
+                <option value="{{employee.id}}">{{employee.first_name}} {{employee.first_name}} - {{employee.email}}</option>
+            {% endfor %}
+            </Select>
+        </div>
+
+        <hr>
+        <button class="btn btn-outline-primary" type="submit">Submit</button>
     </form>
 </div>
 
 {% endblock %}
 
 {% block script %}
-
+<script>
+    
+</script>
 {% endblock %}
