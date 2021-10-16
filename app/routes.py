@@ -9,7 +9,7 @@ from app.classes import Fetch, Function, Insert
 from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm
 from app.email import Email
 from app import app
-from app.models import User, Department, Student, Role, Employee
+from app.models import Profile, User, Department, Student, Role, Employee
 
 
 #_________________________________
@@ -75,28 +75,28 @@ def view_user():
 # Login-required: yes
 # parameter:
 # role:
-# Description: Add Employee
-@app.route('/<position>/profile/validate/<email>', methods=['GET', 'POST'])
-def validate_profile(position, email):
+# Description: validate users
+@app.route('/<position>/profile/validate/<email>/<redirect_to>', methods=['GET', 'POST'])
+def validate_profile(position, email, redirect_to):
     form = ProfileForm()
-    profile = None
+    profile = Fetch.profile_by_email(email)
+
     if request.method == "POST":    # no form validation 
-        profile = Fetch.profile_by_email(form.email.data)
         if profile == None:
             email = form.email.data
             if form.validate_on_submit():
                 Insert.profile(form)
                 profile = Fetch.profile_by_email(form.email.data)
                 if position == "student":
-                    return redirect(url_for('student', profile_id=profile.id))
+                    return redirect(url_for('add_student', profile_id=profile.id, redirect_to=redirect_to))
                 elif position == "employee":
-                    return redirect(url_for('employee', profile_id=profile.id))
+                    return redirect(url_for('add_student', profile_id=profile.id, redirect_to=redirect_to))
         else:
             if position == "student":
-                return redirect(url_for('student', profile_id=profile.id))
+                return redirect(url_for('add_student', profile_id=profile.id, redirect_to=redirect_to))
             elif position == "employee":
-                return redirect(url_for('employee', profile_id=profile.id))
-    return render_template('/profile/validate.html', title="Verify Profile", form=form, email=email)
+                return redirect(url_for('add_employee', profile_id=profile.id))
+    return render_template('/profile/validate.html', title="Verify Profile", form=form, email=email, profile=profile)
 
 #==============================   Student       ==============================
 @app.route('/<department_id>/walkin/start',methods=['GET', 'POST'])
@@ -107,9 +107,9 @@ def start_walkin(department_id):
     department = Department.query.filter_by(id=department_id).first()
     if form.validate_on_submit():
         profile = Fetch.profile_by_email(form.email.data)
-        student = Student.query.filter_by(profile_id=profile.id).first()
         if profile == None or student == None:
-            return redirect(url_for('validate_profile', position="student", email=form.email.data))
+            return redirect(url_for('validate_profile', position="student", email=form.email.data, redirect_to="walkin"))
+        student = Student.query.filter_by(profile_id=profile.id).first()
         if form.purpose.data:
             Insert.walkin(department_id, student.id, form.purpose.data, datetime.now(), "w", None)
             return redirect(url_for('start_walkin', department_id=department_id))
@@ -121,22 +121,26 @@ def start_walkin(department_id):
 # parameter: profile_id
 # role: any
 # Description: Add student, Add user, add role
-@app.route('/<int:profile_id>/student/add',methods=['GET', 'POST'])
-def add_student(profile_id):
+@app.route('/<int:profile_id>/student/add/<redirect_to>',methods=['GET', 'POST'])
+def add_student(profile_id, redirect_to):
     form = AddUserForm()
     departments = Department.query.all()
     student = Student.query.filter_by(profile_id=profile_id).first()
     user = User.query.filter_by(profile_id=profile_id).first()
+    profile = Profile.query.filter_by(id=profile_id).first()
     if request.method == "POST":
         if user == None and form.validate_on_submit():
             password = Function.random_password()
             Insert.user(form.username.data, password, profile_id)
             user = Fetch.user_by_username(form.username.data)
+            Email.new_user(form.username.data, password, profile.email, profile.first_name)
         if student == None:
-            Insert.student(request.form.get('student_id'), request.form.get('department_id'), profile_id)
+            department_id = request.form.get('department_id')
+            Insert.student(request.form.get('student_id'), department_id, profile_id)
         if Role.query.filter_by(user_id=user.id, name="student").first() == None:
             Insert.role(user.id, "student")
-        # redirect to??
+        if redirect_to == "walkin":
+            return redirect(url_for('start_walkin', department_id=department_id))
     return render_template('/student/add.html', title="Add User", form=form, departments=departments, student=student, user=user)
 
 #============================== Employee  ===================================
