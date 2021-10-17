@@ -4,39 +4,13 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from datetime import date, datetime, timedelta
-from app.classes import Fetch, Function, Insert
+from app.classes import Fetch, Function, Insert, Update
 
-from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm
+from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm
 from app.email import Email
 from app import app
 from app.models import Profile, User, Department, Student, Role, Employee
 
-
-#_________________________________
-# Login-required: No
-# parameter: None
-# Description: login
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard', user_id=current_user.id))
-    Function.get_started()
-    form = LoginForm()
-    if form.validate_on_submit():
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('dashboard', user_id=current_user.id)
-        return redirect(next_page)
-    return render_template('/user/login.html', title="Log In", year=datetime.now().year, form=form)
-#_________________________________
-# Login-required: No
-# parameter: None
-# Description: logout
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
 
 #_________________________________
 # Login-required: yes
@@ -54,12 +28,70 @@ def dashboard():
 # Description: View Department
 @app.route('/departments/view')
 def view_department():
-    if current_user.is_authorized("admin") == False: abort(404)
+    if current_user.is_authorized("admin") == False: abort(403)
     deparments = Department.query.all()
     return render_template('/department/view.html', title="View Department", deparments=deparments)
 
 
 #============================== Profile & User ==============================
+# Login-required: No
+# parameter: None
+# Description: login
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard', user_id=current_user.id))
+    Function.get_started()
+    form = LoginForm()
+    if form.validate_on_submit():
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('dashboard', user_id=current_user.id)
+        return redirect(next_page)
+    return render_template('/user/login.html', title="Log In", year=datetime.now().year, form=form)
+
+#_________________________________
+# Login-required: No
+# parameter: None
+# Description: logout
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+#_________________________________
+# Login-required: No
+# parameter: None
+# Description: Request Password Reset
+@app.route('/password/reset/request', methods=['GET', 'POST'])
+def request_password_reset():
+    notice = ""
+    form = EmailForm()
+
+    if form.validate_on_submit():
+        Email.password_reset(form.email.data)
+        notice = "A password reset link was sent to your email"
+    return render_template('/password/request_reset.html', title="Request Password Reset", form=form, notice=notice)
+
+#_________________________________
+# Login-required: No
+# parameter: None
+# Description: Request Password Reset
+@app.route('/password/reset/<token>',  methods=['GET', 'POST'])
+def reset_password(token):
+    form = PasswordForm()
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    # validate token 
+    user = User.verify_user_token(token)
+    if not user: return redirect(url_for('login'))
+
+    if form.validate_on_submit():
+        Update.password(user, form.password.data)
+        return redirect(url_for('login'))
+    return render_template('/password/reset.html', form=form)
+
 #_________________________________
 # Login-required: yes
 # parameter:
@@ -68,9 +100,10 @@ def view_department():
 @app.route('/users/view',methods=['GET', 'POST'])
 @login_required
 def view_user():
-    if current_user.is_authorized("admin") == False: abort(404)
+    if current_user.is_authorized("admin") == False: abort(403)
     users = User.query.all()
     return render_template('/user/view.html', title="View Users", users=users)
+
 #_________________________________
 # Login-required: yes
 # parameter:
@@ -126,7 +159,7 @@ def add_student(profile_id, redirect_to):
     form = AddUserForm()
     departments = Department.query.all()
     student = Student.query.filter_by(profile_id=profile_id).first()
-    user = User.query.filter_by(profile_id=profile_id).first()
+    user = Fetch.user_by_profile(profile_id)
     profile = Profile.query.filter_by(id=profile_id).first()
     if request.method == "POST":
         if user == None and form.validate_on_submit():
@@ -154,7 +187,7 @@ def add_employee(profile_id):
     form = AddUserForm()
     departments = Department.query.all()
     employee = Employee.query.filter_by(profile_id=profile_id).first()
-    user = User.query.filter_by(profile_id=profile_id).first()
+    user = Fetch.user_by_profile(profile_id)
     if request.method == "POST":
         if user == None and form.validate_on_submit():
             password = Function.random_password()
