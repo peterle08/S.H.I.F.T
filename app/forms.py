@@ -1,10 +1,11 @@
+from flask_login.utils import confirm_login
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField, SelectField, DateField, DecimalField, IntegerField, FileField, FloatField
 
-from wtforms.validators import InputRequired, DataRequired, ValidationError, Email, EqualTo, length
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, length
 from flask_login import current_user, login_user
 from app.models import User
-from app.classes import Fetch
+from app.classes import Fetch, Function
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()], render_kw={'autofocus': True})
@@ -56,3 +57,14 @@ class WalkinForm(FlaskForm):
     # need modified
     email = StringField('Username', validators=[DataRequired(), Email()], render_kw={'autofocus': True})
     purpose = StringField('Purpose',)
+
+class EmailForm(FlaskForm):
+    email = StringField('Username', validators=[DataRequired(), Email()], render_kw={'autofocus': True})
+
+class PasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired(), length(min=10)])
+    confirm_password =  PasswordField('Password', validators=[DataRequired(), length(min=10), EqualTo('password')])
+
+    def validate_password(self, password):
+        if Function.verify_password_requirement(password.data) == False:
+            raise ValidationError('The password must contain at least: 1 number, 1 upper case, 1 lower case & 1 special character')

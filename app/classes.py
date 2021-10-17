@@ -4,6 +4,7 @@
 from os import stat_result
 import string
 import random
+
 from app.models import Student, User, Profile, Setting, Role, Employee, Walkin
 from app import db
 
@@ -29,6 +30,24 @@ class Function:
     def random_password():
         return "mypass:" + ''.join(random.choices(string.ascii_uppercase + string.digits, k = 4))
 
+    def verify_password_requirement(password):
+        if password.isalnum(): return False
+        map = {}    # dictionary that store valid case(s)
+        for e in password:
+            if e.isdigit() : map["number"] = 1
+            else:
+                map["alpha"] = 1
+                if e.islower(): map["lower"] = 1
+                else: map["upper"] = 1
+        
+        if len(map) < 4: return False
+        return True
+
+class Update:
+    def password(user, password):
+        user.set_password(password)
+        db.session.commit()
+
 class Fetch:
     def user_by_id(user_id):
         return User.query.filter_by(id=user_id).first()
@@ -38,6 +57,9 @@ class Fetch:
 
     def profile_by_email(email):
         return Profile.query.filter_by(email=email).first()
+
+    def user_by_profile(profile_id):
+        return User.query.filter_by(profile_id=profile_id).first()
 
 class Insert:
     def profile(form):
@@ -70,3 +92,5 @@ class Insert:
                                 time_stamp=time_stamp, status=status, employee_id=employee_id
                         ))
         db.session.commit()
+    
+    
