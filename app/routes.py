@@ -108,6 +108,19 @@ def view_user():
 # Login-required: yes
 # parameter:
 # role:
+# Description: View Personal Profile
+@app.route('/profile/view',methods=['GET', 'POST'])
+@login_required
+def view_profile():
+    user = current_user
+    id = user.profile_id
+    profile = Fetch.profile_by_profileid(id)
+    return render_template('/profile/view.html', title="Profile Page", user=user, profile=profile)
+
+#_________________________________
+# Login-required: yes
+# parameter:
+# role:
 # Description: validate users
 @app.route('/<position>/profile/validate/<email>/<redirect_to>', methods=['GET', 'POST'])
 def validate_profile(position, email, redirect_to):

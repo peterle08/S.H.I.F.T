@@ -1,0 +1,24 @@
+{% extends "/base/auth.html" %}
+{% block content %}
+
+<p> Hello, {{user.username}} </p>
+
+
+
+<p>Firstname: {{profile.first_name}} Lastname: {{profile.last_name}}</p>
+
+<p>NickName: {{profile.preferred_name}}</p>
+
+<p>Phone Number: {{profile.phone}}</p>
+
+<p>Email: {{profile.email}}</p>
+
+<p>Address: {{profile.address}}</p>
+
+<p>City: {{profile.city}}</p>
+
+<p>State: {{profile.state}}</p>
+
+<p>Zipcode: {{profile.zip_code}}</p>
+
+{% endblock %}
