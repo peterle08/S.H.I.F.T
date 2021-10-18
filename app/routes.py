@@ -47,6 +47,11 @@ def logout():
 def dashboard():
     return render_template('/dashboard/main.html', title="Dashboard", year=datetime.now().year)
 
+@app.route('/viewProfile')
+@login_required
+def viewProfile():
+    return render_template('/dashboard/viewProfile.html', title="Profile", year=datetime.now().year)
+
 #============================== Department =================================
 # Login-required: yes
 # parameter:
@@ -138,4 +143,6 @@ def appointment(user_id):
         },
     ]
     return render_template('calendar/appointment.html', title="Appointment", mycal=events)
+
+    
 
