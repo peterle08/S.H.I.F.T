@@ -58,6 +58,9 @@ class Fetch:
     def profile_by_email(email):
         return Profile.query.filter_by(email=email).first()
 
+    def profile_by_profileid(profileid):
+        return Profile.query.filter_by(id=profileid).first()
+
     def user_by_profile(profile_id):
         return User.query.filter_by(profile_id=profile_id).first()
 
