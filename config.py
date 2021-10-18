@@ -22,5 +22,6 @@ class Config(object):
     MAIL_SERVER='smtp.domain.com'
     MAIL_PORT=465
     MAIL_USE_SSL=True
-    MAIL_USERNAME = ''
-    MAIL_PASSWORD = ''
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    ADMINS = os.environ.get('ADMINS')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')

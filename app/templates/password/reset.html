@@ -1,0 +1,25 @@
+{% extends "/base/public.html" %}
+
+{% block content %}
+<div class="container">
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <div style="margin: auto; text-align: center;">
+            <b style="font-size: larger;">Reset Password</b>
+            <hr>
+            <div class="form-group">
+                {{ form.password(class="form-control", placeholder="New Password") }}
+                {{ form.confirm_password(class="form-control", placeholder="Confirm New Password") }}
+                {% for error in form.password.errors %}
+                <span style="color: red;">{{ error }}</span>
+                {% endfor %}
+                <button type="submit" class="btn btn-outline-danger">Reset</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block script %} 
+
+{% endblock %}

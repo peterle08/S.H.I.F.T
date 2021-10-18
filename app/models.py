@@ -1,7 +1,8 @@
 # created  by 
 
 from enum import unique
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, date, timedelta
+from time import time
 import jwt  # password reset token
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -34,8 +35,21 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password,password)
 
+    # verify role
     def is_authorized(self, user_role):
         return user_role == (Role.query.filter_by(user_id=self.id).first()).name
+
+    # create and verify user token
+    def get_user_token(self, expires_in):
+        return jwt.encode({'reset_password': self.id, 'exp': time() + expires_in}, app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_user_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
 
     def __repr__(self):
         return '<User {}>'.format([self.id, self.username, self.status])
@@ -43,9 +57,13 @@ class User(UserMixin, db.Model):
 class Role(UserMixin, db.Model):
     __tablename__ = "role"
     # Columns
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     name = db.Column(db.String(25))
 
+    __table_args__ = (db.PrimaryKeyConstraint('user_id', 'name'),)
+
+
+    # relationship
     user = db.relationship("User", back_populates="role")
 
     def __repr__(self):

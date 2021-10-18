@@ -1,8 +1,11 @@
 {% extends "/base/public.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/login.css') }}"/>
+
 <div class="container">
-    <h3>Welcome to S.H.I.F.T</h3>
+    <!-- <h3>Welcome to S.H.I.F.T</h3> -->
+    <img src="{{url_for('static', filename='images/logo.png')}}" />
     <form action="" method="POST">
         {{ form.hidden_tag() }}
         <div class="form-group">
@@ -16,6 +19,17 @@
         {% endfor %}
         <div class="form-group">
             <button type="submit" class="btn btn-outline-primary">Log In</button>
+        </div>
+        <br><br>
+        <div class="form-check">
+            <label class="form-check-label">
+                {{ form.remember_me( class="form-check-input") }}
+                Remember me
+            </label>
+        </div>
+        <br><br>
+        <a href="{{url_for('request_password_reset')}}">Forgot Password?</a>
+        <div class="form-group">
         </div>
     </form>
 </div>

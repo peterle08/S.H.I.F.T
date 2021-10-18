@@ -1,8 +1,8 @@
-{% extends "/base/auth.html" %}
+{% extends "/base/public.html" %}
 
 {% block content %}
 <div class="container">
-    <h3>Add User or New Roles</h3>
+    <h3>Welcome to S.H.I.F.T</h3>
     <form action="" method="POST">
     {% if user == None %}
         {{ form.hidden_tag() }}
@@ -17,12 +17,12 @@
         <label>Username: </label> {{user.username}}
     {% endif %}
 
-    {% if employee == None %}
+    {% if student == None %}
         <hr>
         <h4>Student Information: </h4>
         <div class="form-inline">
-            <label>Employee ID : </label>
-            <input name="employee_id" class="form-control" placeholder="Employee ID" minlength="9" maxlength="9">
+            <label>Student ID : </label>
+            <input name="student_id" class="form-control" placeholder="Student ID" minlength="9" maxlength="9">
         </div>
         <div class="form-inline">
             <label>Department: </label>
@@ -33,13 +33,9 @@
             {% endfor %}
             </select>
         </div>
-        <div class="form-inline">
-            <label>Wage ($/hr) : </label>
-            <input name="wage" class="form-control" placeholder="$/hr" type="number">
-        </div>
     {% endif %}
         <hr>
-        <button class="btn btn-outline-primary" type="submit">Submit</button>
+        <button class="btn btn-outline-primary" type="submit">Sign Up</button>
     </form>
 </div>
 
