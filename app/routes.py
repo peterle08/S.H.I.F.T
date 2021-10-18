@@ -9,7 +9,7 @@ from app.classes import Fetch, Function, Insert, Update
 from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm
 from app.email import Email
 from app import app
-from app.models import Profile, User, Department, Student, Role, Employee
+from app.models import Appointment, Profile, User, Department, Student, Role, Employee
 
 
 #_________________________________
@@ -200,28 +200,27 @@ def add_employee(profile_id):
         # redirect to????
     return render_template('/employee/add.html', title="Add User", form=form, departments=departments, employee=employee, user=user)
 
+#============================== Calendar  ===================================
 #_________________________________
 # Login-required: yes
 # parameter:
 # Description: view Appointment
 @app.route('/<user_id>/appointment')
 def appointment(user_id):
-    events = [
-        {
-            'title' : 'Employee 1',
-            'start' : '2021-10-05',
-            'end' : '2021-10-05'
-        },
-        {
-            'title' : 'Employee 2',
-            'start' : '2021-09-24',
-            'end' : '2021-09-25'
-        },
-        {
-            'title' : 'Employee 3',
-            'start' : '2021-09-25',
-            'end' : '2021-09-25'
-        },
-    ]
+    events = []
+    appointments = Fetch.appointments_all()
+    index = 1
+    for appointment in appointments:
+        index += 1
+        events.append(
+            {
+                'id' : str(index),
+                'title' : str(appointment.Profile.first_name) + " at " + str(appointment.Appointment.start_time),
+                'start' : str(appointment.Appointment.date), # str(datetime.combine(appointment.Appointment.date, appointment.Appointment.start_time)),
+                'end' :  str(appointment.Appointment.date), #str(datetime.combine(appointment.Appointment.date, appointment.Appointment.end_time))
+                'classNames': [ 'btn', 'btn-info' ],
+                
+            }
+        )
     return render_template('calendar/appointment.html', title="Appointment", mycal=events)
 
