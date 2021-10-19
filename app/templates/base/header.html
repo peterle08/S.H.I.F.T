@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- can omit the following line -->
+    <title>Shift Header</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../../static/css/nav.css" />
+  </head>
+  <body>
+    <!-- Beginning of the header -->
+    <header class="shiftHeader">
+      <div class="wrapper shiftHeader_wrapper">
+        <a href="#" style="font-weight: bold; font-size: 24px;">S.H.I.F.T</a>
+
+        <!--Will need to attach a class to nav-->
+        <nav>
+            <!-- Am using different button class for this specific instance
+            Reason: buttons work very differently on the header,
+            as opposed to on regular html pages and such -->
+          <button class="buttonHeader" aria-expanded="false" type="button">
+            Menu lololololololololol
+          </button>
+          <ul class="nav_wrapper">
+            <li class="nav_item"><a href="#">Home</a></li>
+            <li class="nav_item"><a href="#">About</a></li>
+            <li class="nav_item"><a href="#">Schedule</a></li>
+            <li class="nav_item"><a href="#">Appointments</a></li>
+            <li class="nav_item"><a href="#">Login</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <!-- End of the header -->
+
+        <!--Makes it look purdy-->
+        <script src="../../static/js/header.js"></script>
+    </body>
+</html>

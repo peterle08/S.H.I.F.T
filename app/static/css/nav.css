@@ -1,0 +1,75 @@
+/* THE CSS FOR THE HEADER */
+/*CSS Stylization for the header. Not yet fully finished.*/
+.buttonHeader{
+    display: none; 
+}
+
+/* @media = responsive design */
+@media (max-width: 599px) {
+    .buttonHeader {
+      display: block;
+      position: absolute;
+      right: 1rem;
+      top: 1rem; 
+    } 
+}
+
+.shiftHeader{
+    position: relative;
+    background-color: #3AAFA9;
+}
+
+.wrapper {
+    max-width: 1140px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.shiftHeader_wrapper{
+    padding-top: 1rem;
+    padding-bottom: 1rem; 
+}
+
+@media (min-width: 600px) {
+    .shiftHeader_wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0;
+    padding-bottom: 0; 
+    } 
+}
+
+/* only displays/activates when the width is appropriate. @media is
+useful for responsive design for different tablets, phones, laptops, etc. */
+/* flex is very important to ensure that the items display properly */
+@media (min-width: 600px){
+    .nav_wrapper{
+        display: flex;
+    }
+}
+@media (max-width: 599px) {
+    .nav_wrapper {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      left: 0;
+      z-index: -1;
+      background-color: #3AAFA9;
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out; 
+    }
+      .nav_wrapper:active {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0); 
+    } 
+}
+.nav_item{
+    display: block;
+    padding: 1.5rem 1rem;
+}
