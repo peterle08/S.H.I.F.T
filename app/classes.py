@@ -65,10 +65,9 @@ class Fetch:
         return User.query.filter_by(profile_id=profile_id).first()
 
     def appointments_all():
-        return db.session.query(Appointment, Student, Employee, Profile)\
+        return db.session.query(Appointment)\
                         .join(Student, Appointment.student_id==Student.id)\
                         .join(Employee, Appointment.employee_id==Employee.id)\
-                        .join(Profile, Student.profile_id==Profile.id)\
                         .all()
 class Insert:
     def profile(form):
