@@ -140,6 +140,14 @@ class Appointment(UserMixin, db.Model):
     student = db.relationship("Student", back_populates="appointment")
     employee = db.relationship("Employee", back_populates="appointment")
 
+    def get_student_profile(self):
+        profile_id = Student.query.get(self.student_id).profile_id
+        return Profile.query.get(profile_id)
+
+    def get_employee_profile(self):
+        profile_id = Employee.query.get(self.employee_id).profile_id
+        return Profile.query.get(profile_id)
+
     def __repr__(self):
         return '<Appointment {}>'.format([self.student_id, self.date, self.start_time])
 

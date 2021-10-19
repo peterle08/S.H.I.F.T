@@ -1,9 +1,11 @@
 import re
-from flask import render_template, redirect, url_for, request, jsonify, abort
+from flask import render_template, redirect, url_for, request, json, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from datetime import date, datetime, timedelta
+
+from werkzeug.utils import append_slash_redirect
 from app.classes import Fetch, Function, Insert, Update
 
 from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm
@@ -222,20 +224,33 @@ def add_employee(profile_id):
 def appointment(user_id):
     events = []
     appointments = Fetch.appointments_all()
-    index = 1
+    app_list = []
+    index = 0
     for appointment in appointments:
-        index += 1
         events.append(
             {
                 'id' : str(index),
-                'title' : str(appointment.Profile.first_name) + " at " + str(appointment.Appointment.start_time),
-                'start' : str(appointment.Appointment.date), # str(datetime.combine(appointment.Appointment.date, appointment.Appointment.start_time)),
-                'end' :  str(appointment.Appointment.date), #str(datetime.combine(appointment.Appointment.date, appointment.Appointment.end_time))
+                'title' : appointment.get_student_profile().first_name + " at " + str(appointment.start_time),
+                'start' : str(appointment.date), # str(datetime.combine(appointment.Appointment.date, appointment.Appointment.start_time)),
+                'end' :  str(appointment.date), #str(datetime.combine(appointment.Appointment.date, appointment.Appointment.end_time))
                 'classNames': [ 'btn', 'btn-info' ],
-                
             }
         )
-    return render_template('calendar/appointment.html', title="Appointment", mycal=events)
+        app_list.append(
+            {
+                "studentId": appointment.student_id,
+                "studentName":  appointment.get_student_profile().first_name,
+                "employeeId": appointment.employee_id,
+                "employeeName": appointment.get_employee_profile().first_name,
+                "start": str(appointment.start_time),
+                "end": str(appointment.end_time)
+            }
+        )
+        index += 1
+
+
+    print(type(appointments))
+    return render_template('appointment/monthly.html', title="Appointment (Monthly)", mycal=events, app_list=app_list)
 
     
 
