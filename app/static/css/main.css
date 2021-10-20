@@ -27,6 +27,7 @@
 
 
 /* footer styling */
+
 .footer {
     position: fixed;
     left: 0;
@@ -37,4 +38,23 @@
     text-align: center;
     font-family: Verdana;
     font-weight: 600;
+    padding-top: 15px;
 }
+
+.footer p {
+    color: #DEF2F1;
+    text-align: center;
+    font-family: Verdana;
+    font-weight: 600;
+    /*padding-top: 0px;*/
+}
+
+.footer img {
+    /*display: block;*/
+    float: center;
+    width: 50px;
+    height: 50px;
+    background: #DEF2F1;
+}
+
+/* end footer styling */
