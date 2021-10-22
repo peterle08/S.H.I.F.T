@@ -2,7 +2,7 @@
     Potential Background Color for much of S.H.I.F.T. 
     background-image: linear-gradient( #def2f1, #3AAFA9);
 }*/
-.buttonS.H.I.F.T{
+.buttonSHIFT{
     background-color: #3AAFA9;
     color: #DEF2F1;
     width: 40px;
@@ -18,10 +18,10 @@
     transition-duration: .3s;
     box-shadow: 3px 6px black;
 }
-.buttonS.H.I.F.T:hover{
+.buttonSHIFT:hover{
     background-color: #2b7A78;
 }
-.buttonS.H.I.F.T:active{
+.buttonSHIFT:active{
     box-shadow: 0px 0px black;
 }
 
@@ -41,3 +41,4 @@
     width: 80%;
 }
   
+
