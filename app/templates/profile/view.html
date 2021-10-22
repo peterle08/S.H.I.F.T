@@ -1,4 +1,5 @@
 {% extends "/base/auth.html" %}
+
 {% block content %}
 
 <p> Hello, {{user.username}} </p>
@@ -20,5 +21,113 @@
 <p>State: {{profile.state}}</p>
 
 <p>Zipcode: {{profile.zip_code}}</p>
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+        Edit
+    </button>
+
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">{{profile.first_name}} {{profile.last_name}}</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body ">
+                    <form action="" method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            <div class="custom-control-inline">
+                                {{ form.first_name.label(class="control-label col-sm-5")}}
+                                {{ form.first_name(class="form-control", placeholder="First Name", value=profile.first_name) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control-inline">
+                                {{ form.last_name.label(class="control-label col-sm-5")}}
+                                {{ form.last_name(class="form-control", placeholder="Last Name", value=profile.last_name) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control-inline">
+                                {{ form.middle_name.label(class="control-label col-sm-5")}}
+                                {{ form.middle_name(class="form-control", placeholder="Middle Name", value=profile.middle_name) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control-inline">
+                                {{ form.preferred_name.label(class="control-label col-sm-5")}}
+                                {{ form.preferred_name(class="form-control", placeholder="Preferred Name", value=profile.preferred_name) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control-inline">
+                                {{ form.gender.label(class="control-label col-sm-5")}}
+                                {{ form.gender(class="form-control", value=profile.gender) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control-inline">
+                                {{ form.phone.label(class="control-label col-sm-5")}}
+                                {{ form.phone(class="form-control", placeholder="Phone Number", value=profile.phone) }}
+                                {% for error in form.phone.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control-inline">
+                                {{ form.email.label(class="control-label col-sm-5")}}
+                                {{ form.email(class="form-control", placeholder="Email", value=profile.email) }}
+                            </div>
+                            {% for error in form.email.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control-inline">
+                                {{ form.address.label(class="control-label col-sm-5")}}
+                                {{ form.address(class="form-control", placeholder="Address", value=profile.address) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control-inline">
+                                {{ form.city.label(class="control-label col-sm-5")}}
+                                {{ form.city(class="form-control", placeholder="city", value=profile.city) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control-inline">
+                                <label class="control-label col-sm-5">State - Zip Code</label>
+                                {{ form.state(class="form-control col-3", placeholder="state", value=profile.state) }} - 
+                                {{ form.zip_code(class="form-control col-3", placeholder="Zip Code",value=profile.zip_code) }}
+                                {% for error in form.state.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
+                                {% for error in form.zip_code.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {{ form.current_email(type="hidden", value=profile.email) }}
+                        <hr>
+                        {{ form.submit(class="btn btn-outline-info", style="width:100%;")}}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for error in form.email.errors %}
+    <span class="text-danger">Email: {{ error }}</span><br>
+    {% endfor %}
+    {% for error in form.state.errors %}
+    <span class="text-danger">State: {{ error }}</span><br>
+    {% endfor %}
+    {% for error in form.zip_code.errors %}
+    <span class="text-danger">Zip Code: {{ error }}</span><br>
+    {% endfor %}
+{% endblock %}
+
+{% block script %}
 
 {% endblock %}

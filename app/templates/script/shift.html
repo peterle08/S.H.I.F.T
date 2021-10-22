@@ -1,0 +1,39 @@
+<!-- import this to any shift template
+    make sure: <input id="viewStyle" type="hidden" value="initialView">
+                example: <input id="viewStyle" type="hidden" value="dayGridMonth">
+-->
+<script>
+    let viewStyle = document.getElementById("viewStyle").value;
+    var eventList = {{ events | safe }};
+    var shifts = {{ shifts | tojson }};
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: viewStyle,    // style to display
+            events : eventList, // get the list of events
+            editable: true, // enable drag & drop
+            themeSystem: 'bootstrap',
+            eventClick: function(info) {
+                let id = info.event.id;     // get event id
+                // show the modal
+                document.getElementById("myModal").style.display = "block";
+                // hide modal if click outside the modal
+                document.getElementById("myModal").addEventListener("click", (event) => {
+                        const myModal = document.getElementById("myModal");
+                        let eventTarget = event.target;
+                        if(eventTarget == myModal) {
+                            myModal.style.display = "none";
+                        }
+                    },
+                )
+                // show shift in formation
+                document.getElementById("labelName").innerHTML = shifts[id]["employeeName"];
+                document.getElementById("labelDate").innerHTML = shifts[id]["date"];
+                document.getElementById("labelStartTime").innerHTML = shifts[id]["start"];
+                document.getElementById("labelEndTime").innerHTML = shifts[id]["end"];
+                document.getElementById("labelStatus").innerHTML = shifts[id]["status"];
+            }
+        });
+        calendar.render();
+    });
+</script>

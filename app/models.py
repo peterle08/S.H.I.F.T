@@ -36,8 +36,11 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password,password)
 
     # verify role
-    def is_authorized(self, user_role):
-        return user_role == (Role.query.filter_by(user_id=self.id).first()).name
+    def is_authorized(self, roles):
+        for r in roles:
+            if Role.query.filter_by(user_id=self.id, name=r).first():
+                return True
+        return False
 
     # create and verify user token
     def get_user_token(self, expires_in):
