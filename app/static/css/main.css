@@ -25,6 +25,7 @@
     box-shadow: 0px 0px black;
 }
 
+/* Modal - from bs4 */
 .modal {
     background-color: #126360da; /* Black w/ opacity */
     background-color: #50817fa4; /* Fallback color */
@@ -35,3 +36,8 @@
     border-radius: 5px;
     width: 80%;
 }
+
+/* Dropdown Menu - bs4 */
+.dropdown:hover > .dropdown-menu {
+    display: block;
+  }
