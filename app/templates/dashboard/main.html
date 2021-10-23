@@ -11,14 +11,8 @@
         {% endif %}
     </div>
     <div class="mb-3 row">
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">My Calendar</a>
-        <a href="{{url_for('appointment_monthly', user_id=current_user.id)}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Appointment</a>
-        <a href="{{url_for('view_profile')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">My Profile</a>
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Setting</a>
-    </div>
-    <div class="mb-3 row">
         {% if current_user.is_authorized(["employee"]) %}
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">View All Schedule</a>
+        <a href="{{url_for('shift_all')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">View All Schedule</a>
         {% endif %}
         {% if current_user.is_authorized(["supervisor"]) %}
         <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Shift Swap Request</a>

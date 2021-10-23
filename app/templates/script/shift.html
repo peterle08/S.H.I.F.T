@@ -1,15 +1,35 @@
 <!-- 
+    Created by: 
     - import this to any shift template
-    - make sure: <input id="viewStyle" type="hidden" value="initialView">
-                example: <input id="viewStyle" type="hidden" value="dayGridMonth">
+    - make sure:-  <input id="viewStyle" type="hidden" value="initialView"> 
+                - <input id="viewStyleButton" type="hidden" value="dayGridMonth,dayGridMonth">
+            example: <input id="viewStyle" type="hidden" value="dayGridMonth">
+
 -->
 <script>
     let viewStyle = document.getElementById("viewStyle").value;
+    let viewStyleButtons = document.getElementById("viewStyleButton").value;
     var eventList = {{ events | safe }};
     var shifts = {{ shifts | tojson }};
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
+            // create new button
+            customButtons: {
+                weekly: {
+                    text: 'weekly',
+                    click: function() {
+                        alert('clicked the custom button!');
+                    }
+                },
+            },
+            headerToolbar: {
+                color: 'green',
+                right: 'prev,today,next',
+                center: 'title',
+                left: viewStyleButtons,
+            }, 
+
             initialView: viewStyle,    // style to display
             events : eventList, // get the list of events
             editable: true, // enable drag & drop
@@ -33,7 +53,7 @@
                 document.getElementById("labelStartTime").innerHTML = shifts[id]["start"];
                 document.getElementById("labelEndTime").innerHTML = shifts[id]["end"];
                 document.getElementById("labelStatus").innerHTML = shifts[id]["status"];
-            }
+            },
         });
         calendar.render();
     });

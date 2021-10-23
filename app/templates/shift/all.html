@@ -1,0 +1,55 @@
+{% extends "/base/auth.html" %}
+
+{% block head %}
+    <link href='/static/fullcalendar/fullcalendar/main.css' rel='stylesheet' />
+    <script src='/static/fullcalendar/fullcalendar/main.js'></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div id="calendar"></div>
+</div>
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="labelName">Employee Name</h4>
+                <button type="button" class="close text-danger" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body ">
+                <div class="form-group">
+                    <div class="custom-control-inline">
+                        <label class="control-label col-sm-5">Date</label>
+                        <span id="labelDate"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="custom-control-inline">
+                        <span  class="control-label col-sm-5">Time: </span>
+                        <span id="labelStartTime"></span> - <span id="labelEndTime"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control-inline">
+                        <span class="labelStatus"></span>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <!-- <button type="submit" class="btn btn-outline-info col-12"></button> -->
+        </div>
+    </div>
+    <input id="viewStyle" type="hidden" value="dayGridMonth">
+    <input id="viewStyleButton" type="hidden" value="dayGridMonth">
+{% endblock %}
+
+{% block script %}
+    <script>
+        function hideModal(){
+            document.getElementById("myModal").style.display = "none";
+        }
+    </script>
+    {% include '/script/shift.html' %}
+{% endblock %}
