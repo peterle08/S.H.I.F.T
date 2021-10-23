@@ -267,9 +267,9 @@ def appointment_monthly(user_id):
 # Login-required: yes
 # parameter:
 # Description: view shift - monthly
-@app.route('/shift/monthly')
+@app.route('/shift/all')
 @login_required
-def shift_monthly():
+def shift_all():
     if current_user.is_authorized(['employee']) == False: abort(403)
     employee = Fetch.employee_by_profile(current_user.profile_id)
     shift_list = Fetch.shift_by_department(employee.department_id)
@@ -284,9 +284,9 @@ def shift_monthly():
         events.append(
             {
                 'id' : str(index),
-                'title' : employee_name + " at " + str(shift.Shift.start_time),
-                'start' : str(shift.Shift.date), # str(datetime.combine(appointment.date, appointment.start_time)),
-                'end' :  str(shift.Shift.date), #str(datetime.combine(appointment.date, appointment.end_time))
+                'title' : employee_name, #+ " at " + str(shift.Shift.start_time),
+                'start' : str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
+                'end' :  str(datetime.combine(shift.Shift.date, shift.Shift.end_time)),
                 'classNames': [ 'btn', 'btn-info' ],
             }
         )
@@ -302,16 +302,16 @@ def shift_monthly():
             }
         )
         index += 1 # increase event_id
-    return render_template('shift/monthly.html', title="Shift - Monthly", events=events, shifts=shifts)
+    return render_template('shift/all.html', title="Shift - View All", events=events, shifts=shifts)
 
 #_________________________________
 # Login-required: yes
 # parameter:
 # Description: view shift - weekly
-@app.route('/shift/weekly')
+@app.route('/shift/personal')
 @login_required
-def shift_weekly():
-    # to add time to date:  use datetime.combine(appointment.date, appointment.start_time)
+def shift_personal():
+    # to add time to date:  str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
     shifts =  []
     events = []
-    return render_template('shift/monthly.html', title="Shift - Weekly", events=events, shifts=shifts)
+    return render_template('shift/personal.html', title="Shift - Weekly", events=events, shifts=shifts)
