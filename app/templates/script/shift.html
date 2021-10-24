@@ -14,15 +14,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            // create new button
-            customButtons: {
-                weekly: {
-                    text: 'weekly',
-                    click: function() {
-                        alert('clicked the custom button!');
-                    }
-                },
-            },
             headerToolbar: {
                 color: 'green',
                 right: 'prev,today,next',

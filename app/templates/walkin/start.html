@@ -1,23 +1,60 @@
 {% extends "/base/public.html" %}
 
-{% block content %}
-<div class="container">
-    <h3>Welcome to Department of {{department.name}}</h3>
-    <form action="" method="POST">
-        {{ form.hidden_tag() }}
-        {{ form.email(class="form-control", placeholder="Your Kent Email") }}
-    {% for error in form.email.errors %}
-        <span style="color: red;">{{ error }}</span>
-    {% endfor %}
-    <hr>
-    {% if student %}
-        {{ form.purpose(class="form-control", placeholder="Purpose of the visit") }}
-        <hr>
-    {% endif %}
-        <button class="btn btn-outline-primary" type="submit">Submit</button>
-    </form>
-</div>
+{% block head %}
+    <style>
+        .resize{
+            text-align: center;
+            margin: auto;
+            position: absolute;
+            width: 450px;
+            z-index: -1;
+        }
+    </style>
+{% endblock %}
 
+{% block content %}
+<div class="d-flex justify-content-center">
+<img src="/static/images/kent/kentLogo.png" alt="kentLogo" class="resize">
+</div>
+<p style="height: 100px;"></p>
+<div class="container-sm mt-5">
+    <div class=" bg-shift-transparent m-auto col-12 col-md-8 shadow-lg rounded-xlg">
+        <br>
+        <h3 class="text-center">Welcome to Department of</h3>
+        <h2 class="text-center text-info">{{department.name}}</h2>
+        <br>
+        <form action="" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text fa fa-envelope-o text-info"></span>
+                </div>
+                {{ form.email(class="form-control", placeholder="Your Kent Email") }}
+            </div>
+            
+        {% for error in form.email.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        <hr>
+        {% if student %}
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                <span class="input-group-text fa fa fa-commenting-o text-info"></span>
+                </div>
+                {{ form.purpose(class="form-control", placeholder="Purpose of the visit") }}
+            </div>
+            <hr>
+            <button class="btn btn-lg btn-outline-primary mb-5" type="submit" style="width: 100%;">Submit</button>
+        {% else %}
+            <button class="btn btn-lg btn-outline-primary mb-5" type="submit" style="width: 100%;">Next</button>
+        {% endif %}
+        </form>
+        
+    </div>
+</div>
+<div class="w-100 text-center mt-5">
+    <img src="/static/images/logo/logoBg.png" class="m-auto fixed-bottom" style="width: 70px;">
+</div>
 {% endblock %}
 
 {% block script %}
