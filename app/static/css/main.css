@@ -41,3 +41,10 @@
 .dropdown:hover > .dropdown-menu {
     display: block;
   }
+
+
+/* background */
+.bg-shift-transparent{
+    background-color: #2c928f73; /* Black w/ opacity */
+    background-color: #288a8657; /* Fallback color */
+}
