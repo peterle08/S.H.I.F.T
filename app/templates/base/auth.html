@@ -52,7 +52,7 @@
                   <a href="{{url_for('shift_personal')}}" class="nav-link" >My Calendar</a>
                 </li>
                 <li class="nav-item">
-                  <a href="{{url_for('appointment_monthly', user_id=current_user.id)}}" class="nav-link text-decoration-none" >Appointment</a>
+                  <a href="{{url_for('appointment_all',)}}" class="nav-link text-decoration-none" >Appointment</a>
                 </li>
             </ul>
         </div>
@@ -62,7 +62,7 @@
             </button>
             <div class="dropdown-menu">
                 <a href="{{url_for('shift_personal')}}" class="dropdown-item" >My Calendar</a>
-                <a href="{{url_for('appointment_monthly', user_id=current_user.id)}}" class="dropdown-item" >Appointment</a>
+                <a href="{{url_for('appointment_all')}}" class="dropdown-item" >Appointment</a>
                 <div class="dropdown-divider"></div>
             {% if current_user.is_authorized(["admin"]) %}
                 <a href="{{url_for('view_user')}}" class="dropdown-item" >Users</a>

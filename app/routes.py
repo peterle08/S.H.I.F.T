@@ -12,7 +12,7 @@ from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm
 from app.email import Email
 from app import app
 from app.models import Appointment, Profile, User, Department, Student, Role, Employee
-
+from app.datetimes import FormatDateTime
 
 #_________________________________
 # Login-required: yes
@@ -232,9 +232,9 @@ def add_employee(profile_id):
 # Login-required: yes
 # parameter:
 # Description: view Appointment
-@app.route('/<user_id>/appointment/monthly')
+@app.route('/appointments')
 @login_required
-def appointment_monthly(user_id):
+def appointment_all():
     events = []
     appointments = Fetch.appointments_all()
     app_list = []
@@ -243,10 +243,9 @@ def appointment_monthly(user_id):
         events.append(
             {
                 'id' : str(index),
-                'title' : appointment.get_student_profile().first_name + " at " + str(appointment.start_time),
-                'start' : str(appointment.date), # str(datetime.combine(appointment.date, appointment.start_time)),
-                'end' :  str(appointment.date), #str(datetime.combine(appointment.date, appointment.end_time))
-                'classNames': [ 'btn', 'btn-info' ],
+                'title' : appointment.get_student_profile().first_name,
+                'start' : str(datetime.combine(appointment.date, appointment.start_time)),
+                'end' :  str(datetime.combine(appointment.date, appointment.end_time)),
             }
         )
         app_list.append( # save to array of map for passing to js later
@@ -255,13 +254,14 @@ def appointment_monthly(user_id):
                 "studentName":  appointment.get_student_profile().first_name,
                 "employeeId": appointment.employee_id,
                 "employeeName": appointment.get_employee_profile().first_name,
+                "date": str(appointment.date),
                 "start": str(appointment.start_time),
                 "end": str(appointment.end_time)
             }
         )
         index += 1
 
-    return render_template('appointment/monthly.html', title="Appointment (Monthly)", mycal=events, app_list=app_list)
+    return render_template('appointment/all.html', title="Appointments", mycal=events, app_list=app_list)
 
 #_________________________________
 # Login-required: yes
@@ -314,4 +314,4 @@ def shift_personal():
     # to add time to date:  str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
     shifts =  []
     events = []
-    return render_template('shift/personal.html', title="Shift - Weekly", events=events, shifts=shifts)
+    return render_template('shift/personal.html', title="My Shift", events=events, shifts=shifts)

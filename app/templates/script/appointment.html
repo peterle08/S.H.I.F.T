@@ -5,10 +5,21 @@
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
+            allDay: false, 
+            
+            initialView: 'timeGridWeek',
             events : eventList,
             editable: true,
-            themeSystem: 'bootstrap',
+            eventTimeFormat: { // like '14:30:00'
+                hour: 'numeric',
+                minute: '2-digit',
+                meridiem: 'short'
+            },
+            //themeSystem: 'bootstrap',
+            headerToolbar: {
+                right: 'dayGridMonth,timeGridWeek today prev,next',
+                left: 'title'
+            },
             eventClick: function(info) {
                 let id = info.event.id;
                 document.getElementById("myModal").style.display = "block";
@@ -20,7 +31,11 @@
                         }
                     },
                 )
-                document.getElementById("first_name").value = app[id]["studentName"] + app[id]["start"]  ; // get student name
+                document.getElementById("labelStudentName").innerHTML = app[id]["studentName"];
+                document.getElementById("labelDate").innerHTML = app[id]["date"];
+                document.getElementById("labelStartTime").innerHTML = app[id]["start"];
+                document.getElementById("labelEndTime").innerHTML = app[id]["end"];
+                document.getElementById("labelEmployeeName").innerHTML = app[id]["employeeName"];
             }
         });
         calendar.render();

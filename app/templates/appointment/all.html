@@ -10,11 +10,12 @@
     <div id="calendar"></div>
 </div>
 
+
 <div class="modal" id="myModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="labelName">Employee Name</h4>
+                <h4 class="modal-title" id="labelStudentName"></h4>
                 <button type="button" class="close text-danger" onclick="hideModal()">&times;</button>
             </div>
             <div class="modal-body ">
@@ -33,7 +34,7 @@
 
                 <div class="form-group">
                     <div class="custom-control-inline">
-                        <span class="labelStatus"></span>
+                        <span class="labelEmployeeName"></span>
                     </div>
                 </div>
             </div>
@@ -47,10 +48,5 @@
 {% endblock %}
 
 {% block script %}
-    <script>
-        function hideModal(){
-            document.getElementById("myModal").style.display = "none";
-        }
-    </script>
-    {% include '/script/shift.html' %}
+    {% include '/script/appointment.html' %}
 {% endblock %}
