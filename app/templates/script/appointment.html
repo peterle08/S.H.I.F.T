@@ -1,0 +1,28 @@
+<script>
+    // need modified
+    var eventList = {{ mycal | safe }};
+    var app = {{ app_list | tojson }};
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events : eventList,
+            editable: true,
+            themeSystem: 'bootstrap',
+            eventClick: function(info) {
+                let id = info.event.id;
+                document.getElementById("myModal").style.display = "block";
+                document.getElementById("myModal").addEventListener("click", (event) => {
+                        const myModal = document.getElementById("myModal");
+                        let eventTarget = event.target;
+                        if(eventTarget == myModal) {
+                            myModal.style.display = "none";
+                        }
+                    },
+                )
+                document.getElementById("first_name").value = app[id]["studentName"] + app[id]["start"]  ; // get student name
+            }
+        });
+        calendar.render();
+    });
+</script>
