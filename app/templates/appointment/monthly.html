@@ -1,4 +1,4 @@
-{% extends "/base/public.html" %}
+{% extends "/base/auth.html" %}
 
 {% block head %}
     <link href='/static/fullcalendar/fullcalendar/main.css' rel='stylesheet' />
@@ -10,9 +10,9 @@
     <div id="calendar"></div>
 </div>
 
-<!-- The Modal -->
+
 <div class="modal" id="myModal">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
         <!-- Modal Header -->
@@ -38,7 +38,12 @@
 {% endblock %}
 
 {% block script %}
+<<<<<<< HEAD
     {% include '/calendar/scripts.html' %}
 {% endblock %}
 
 {% include '/base/footer.html' %}
+=======
+    {% include '/script/appointment.html' %}
+{% endblock %}
+>>>>>>> 68de7e6fa184cfbf73fa6f32623cc85094fc5fc8

@@ -68,3 +68,28 @@ class PasswordForm(FlaskForm):
     def validate_password(self, password):
         if Function.verify_password_requirement(password.data) == False:
             raise ValidationError('The password must contain at least: 1 number, 1 upper case, 1 lower case & 1 special character')
+
+class EditProfileForm(FlaskForm):
+    first_name = StringField('First Name', validators=[DataRequired()])
+    last_name = StringField('Last Name', validators=[DataRequired()])
+    middle_name = StringField('Middle Name')
+    preferred_name = StringField('Preferred Name')
+    gender =  SelectField("Gender",  validators=[DataRequired()], choices=[('m', 'Male'), ('f', 'Female'), ('o', 'others')])
+    phone = StringField('Phone Number', validators=[DataRequired(), length(min=10, max=15)])
+    email = StringField('Email', validators=[DataRequired(), Email()])  # store current or new email address
+    current_email = StringField('Email', validators=[DataRequired(), Email()]) # store current email address
+    address = StringField('Address', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    state = StringField('State', validators=[DataRequired()])
+    zip_code = StringField('Zip Code', validators=[DataRequired(), length(min=5, max=5)])
+
+    submit = SubmitField('Save')
+
+    def validate_email(self, email):
+        if email.data != self.current_email.data:
+            if Fetch.profile_by_email(email.data):
+                raise ValidationError("Existing Email")
+
+    def validate_phone(self, phone):
+        if (phone.data).isnumeric() == False:
+            raise ValidationError("Number only")

@@ -8,7 +8,7 @@ from datetime import date, datetime, timedelta
 from werkzeug.utils import append_slash_redirect
 from app.classes import Fetch, Function, Insert, Update
 
-from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm
+from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm
 from app.email import Email
 from app import app
 from app.models import Appointment, Profile, User, Department, Student, Role, Employee
@@ -30,7 +30,7 @@ def dashboard():
 # Description: View Department
 @app.route('/departments/view')
 def view_department():
-    if current_user.is_authorized("admin") == False: abort(403)
+    if current_user.is_authorized(['admin']) == False: abort(403)
     deparments = Department.query.all()
     return render_template('/department/view.html', title="View Department", deparments=deparments)
 
@@ -102,7 +102,7 @@ def reset_password(token):
 @app.route('/users/view',methods=['GET', 'POST'])
 @login_required
 def view_user():
-    if current_user.is_authorized("admin") == False: abort(403)
+    if current_user.is_authorized(['admin']) == False: abort(403)
     users = User.query.all()
     return render_template('/user/view.html', title="View Users", users=users)
 
@@ -110,14 +110,15 @@ def view_user():
 # Login-required: yes
 # parameter:
 # role:
-# Description: View Personal Profile
+# Description: View Personal Profile, Update profile on form validation
 @app.route('/profile/view',methods=['GET', 'POST'])
 @login_required
 def view_profile():
-    user = current_user
-    id = user.profile_id
-    profile = Fetch.profile_by_profileid(id)
-    return render_template('/profile/view.html', title="Profile Page", user=user, profile=profile)
+    form = EditProfileForm()
+    profile = Fetch.profile_by_profileid(current_user.profile_id)
+    if form.validate_on_submit():
+        Update.profile(profile, form)
+    return render_template('/profile/view.html', title="Profile Page", form=form, user=current_user, profile=profile)
 
 #_________________________________
 # Login-required: yes
@@ -147,7 +148,13 @@ def validate_profile(position, email, redirect_to):
     return render_template('/profile/validate.html', title="Verify Profile", form=form, email=email, profile=profile)
 
 #==============================   Student       ==============================
+#_________________________________
+# Login-required: yes (student do not required to login)
+# parameter:
+# role:
+# Description: if existing student -> checkin, else: redirect to validate profile
 @app.route('/<department_id>/walkin/start',methods=['GET', 'POST'])
+@login_required
 def start_walkin(department_id):
     form = WalkinForm()
     student = None
@@ -155,12 +162,15 @@ def start_walkin(department_id):
     department = Department.query.filter_by(id=department_id).first()
     if form.validate_on_submit():
         profile = Fetch.profile_by_email(form.email.data)
-        if profile == None or student == None:
+        if profile == None:
             return redirect(url_for('validate_profile', position="student", email=form.email.data, redirect_to="walkin"))
-        student = Student.query.filter_by(profile_id=profile.id).first()
-        if form.purpose.data:
-            Insert.walkin(department_id, student.id, form.purpose.data, datetime.now(), "w", None)
-            return redirect(url_for('start_walkin', department_id=department_id))
+        else:
+            student = Student.query.filter_by(profile_id=profile.id).first()
+            if student == None:
+                return redirect(url_for('validate_profile', position="student", email=form.email.data, redirect_to="walkin"))
+            if form.purpose.data:
+                Insert.walkin(department_id, student.id, form.purpose.data, datetime.now(), "w", None)
+                return redirect(url_for('start_walkin', department_id=department_id))
     return render_template('/walkin/start.html', title="Start Walkin", form=form, student=student, department=department)
 
 
@@ -189,6 +199,8 @@ def add_student(profile_id, redirect_to):
             Insert.role(user.id, "student")
         if redirect_to == "walkin":
             return redirect(url_for('start_walkin', department_id=department_id))
+        elif redirect_to == "signup":
+            pass # redirect  login??????
     return render_template('/student/add.html', title="Add User", form=form, departments=departments, student=student, user=user)
 
 #============================== Employee  ===================================
@@ -220,8 +232,9 @@ def add_employee(profile_id):
 # Login-required: yes
 # parameter:
 # Description: view Appointment
-@app.route('/<user_id>/appointment')
-def appointment(user_id):
+@app.route('/<user_id>/appointment/monthly')
+@login_required
+def appointment_monthly(user_id):
     events = []
     appointments = Fetch.appointments_all()
     app_list = []
@@ -231,12 +244,12 @@ def appointment(user_id):
             {
                 'id' : str(index),
                 'title' : appointment.get_student_profile().first_name + " at " + str(appointment.start_time),
-                'start' : str(appointment.date), # str(datetime.combine(appointment.Appointment.date, appointment.Appointment.start_time)),
-                'end' :  str(appointment.date), #str(datetime.combine(appointment.Appointment.date, appointment.Appointment.end_time))
+                'start' : str(appointment.date), # str(datetime.combine(appointment.date, appointment.start_time)),
+                'end' :  str(appointment.date), #str(datetime.combine(appointment.date, appointment.end_time))
                 'classNames': [ 'btn', 'btn-info' ],
             }
         )
-        app_list.append(
+        app_list.append( # save to array of map for passing to js later
             {
                 "studentId": appointment.student_id,
                 "studentName":  appointment.get_student_profile().first_name,
@@ -248,9 +261,57 @@ def appointment(user_id):
         )
         index += 1
 
-
-    print(type(appointments))
     return render_template('appointment/monthly.html', title="Appointment (Monthly)", mycal=events, app_list=app_list)
 
-    
+#_________________________________
+# Login-required: yes
+# parameter:
+# Description: view shift - monthly
+@app.route('/shift/all')
+@login_required
+def shift_all():
+    if current_user.is_authorized(['employee']) == False: abort(403)
+    employee = Fetch.employee_by_profile(current_user.profile_id)
+    shift_list = Fetch.shift_by_department(employee.department_id)
+    shifts =  []
+    events = []
+    index = 0
+    for shift in shift_list:
+        if (shift.Profile.preferred_name):
+            employee_name = shift.Profile.preferred_name
+        else: 
+            employee_name = shift.Profile.first_name
+        events.append(
+            {
+                'id' : str(index),
+                'title' : employee_name, #+ " at " + str(shift.Shift.start_time),
+                'start' : str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
+                'end' :  str(datetime.combine(shift.Shift.date, shift.Shift.end_time)),
+                'classNames': [ 'btn', 'btn-info' ],
+            }
+        )
+        # save shift to array of map 
+        shifts.append(
+            {
+                "employeeId": shift.Employee.id,
+                "employeeName":  employee_name,
+                "date": shift.Shift.date,
+                "start": str(shift.Shift.start_time),
+                "end": str(shift.Shift.end_time),
+                "status": shift.Shift.status
+            }
+        )
+        index += 1 # increase event_id
+    return render_template('shift/all.html', title="Shift - View All", events=events, shifts=shifts)
 
+#_________________________________
+# Login-required: yes
+# parameter:
+# Description: view shift - weekly
+@app.route('/shift/personal')
+@login_required
+def shift_personal():
+    # to add time to date:  str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
+    shifts =  []
+    events = []
+    return render_template('shift/personal.html', title="Shift - Weekly", events=events, shifts=shifts)

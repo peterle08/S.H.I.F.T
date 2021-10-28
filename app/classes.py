@@ -1,11 +1,12 @@
 # Created & Developed by ...
 # Copyright 2021
 
+from operator import and_
 from os import stat_result
 import string
 import random
 
-from app.models import Appointment, Student, User, Profile, Setting, Role, Employee, Walkin
+from app.models import Appointment, Department, Student, User, Profile, Setting, Role, Employee, Walkin, Shift
 from app import db
 
 class Function:
@@ -44,8 +45,21 @@ class Function:
         return True
 
 class Update:
-    def password(user, password):
+    def password(user, password):   # update password
         user.set_password(password)
+        db.session.commit()
+
+    def profile(profile, form):     # update profile 
+        profile.first_name = form.first_name.data
+        profile.last_name = form.last_name.data
+        profile.middle_name = form.middle_name.data
+        profile.preferred_name = form.preferred_name.data
+        profile.phone = form.phone.data
+        profile.email = form.email.data
+        profile.address = form.address.data
+        profile.city = form.city.data
+        profile.state = form.state.data
+        profile.zip_code = form.zip_code.data
         db.session.commit()
 
 class Fetch:
@@ -69,6 +83,18 @@ class Fetch:
                         .join(Student, Appointment.student_id==Student.id)\
                         .join(Employee, Appointment.employee_id==Employee.id)\
                         .all()
+
+    def shift_by_department(department_id):
+        return db.session.query(Shift, Employee, Profile)\
+                            .join(Employee, Shift.employee_id==Employee.id)\
+                            .join(Profile, Profile.id==Employee.profile_id)\
+                            .filter(Employee.department_id==department_id)\
+                            .order_by(Shift.date, Shift.start_time)\
+                            .all()
+
+    def employee_by_profile(profile_id):
+        return Employee.query.filter_by(profile_id=profile_id).first()
+
 class Insert:
     def profile(form):
         stmt = Profile(first_name=form.first_name.data, last_name=form.last_name.data, middle_name=form.middle_name.data,
