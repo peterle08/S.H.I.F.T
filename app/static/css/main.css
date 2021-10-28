@@ -25,6 +25,7 @@
     box-shadow: 0px 0px black;
 }
 
+<<<<<<< HEAD
 
 /* footer styling */
 
@@ -57,6 +58,8 @@
 }
 
 /* end footer styling */
+=======
+>>>>>>> 68de7e6fa184cfbf73fa6f32623cc85094fc5fc8
 /* Modal - from bs4 */
 .modal {
     background-color: #126360da; /* Black w/ opacity */
