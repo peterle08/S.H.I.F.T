@@ -227,6 +227,20 @@ def add_employee(profile_id):
         # redirect to????
     return render_template('/employee/add.html', title="Add User", form=form, departments=departments, employee=employee, user=user)
 
+
+#_________________________________
+# Login-required: yes
+# parameter:
+# role: admin, supervisor
+# Description: View employee list
+@app.route('/employees/view',methods=['GET', 'POST'])
+@login_required
+def view_employees():
+    if current_user.is_authorized(['admin', 'supervisor']) == False: abort(403)
+    employees = Employee.query.all()  
+    return render_template('/employee/view.html', title="View Employees", employees=employees)
+
+
 #============================== Calendar  ===================================
 #_________________________________
 # Login-required: yes
