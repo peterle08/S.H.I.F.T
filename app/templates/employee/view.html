@@ -1,0 +1,51 @@
+{% extends "/base/auth.html" %}
+
+{% block content %}
+<div class="container">
+    <table class="table">
+        <tbody>
+            {% for employee in employees: %}
+            <tr onclick="view_modal('{{employee.id}}')" data-toggle="modal" data-target="#myModal">
+                <td>{{employee.profile.first_name}}</td>
+                <td>{{employee.profile.last_name}}</td>
+                <td>{{employee.department.name}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+    <!-- The Modal -->
+    <div class="modal" id="myModal">
+        <div class="modal-dialog">
+        <div class="modal-content">
+        
+            <!-- Modal Header -->
+            <div class="modal-header">
+            <h4 class="modal-title">Modal Heading</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            
+            <!-- Modal body -->
+            <div class="modal-body">
+                <input id="employee_id">
+            </div>
+            
+            <!-- Modal footer -->
+            <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+            
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    function view_modal(id){
+        document.getElementById("employee_id").value = id;
+    }
+</script>
+{% endblock %}
