@@ -1,0 +1,38 @@
+.infocontainer{
+    display:inline-block;
+    border: 1px solid rgb(114, 173, 168);
+    border-radius: 5px;
+    
+}
+
+.spacer1{
+
+margin-top: 3%;
+
+}
+
+.col-sm-4{
+
+    margin-top: 2%;
+}
+
+.profileblock{
+
+width: 100%;
+display: block;
+margin: auto;
+
+}
+
+.shiftbutton{
+
+   background-color:  rgb(114, 173, 168);
+   border-color: rgb(114, 173, 168);
+   
+
+}
+
+.shiftbutton:hover{
+    background-color:   #3AAFA9;
+    border-color:  #3AAFA9;
+}
