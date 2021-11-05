@@ -4,10 +4,11 @@
 <div class="container">
     <table class="table">
         <tbody>
-            {% for user in users: %}
-            <tr onclick="view_modal('{{user.username}}')" data-toggle="modal" data-target="#myModal">
-                <td>{{user.username}}</td>
-                <td>{{user.status}}</td>
+            {% for student in students: %}
+            <tr onclick="view_modal('{{student.id}}')" data-toggle="modal" data-target="#myModal">
+                <td>{{student.profile.first_name}}</td>
+                <td>{{student.profile.last_name}}</td>
+                <td>{{student.profile.email}}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -22,13 +23,13 @@
         
             <!-- Modal Header -->
             <div class="modal-header">
-            <h4 class="modal-title">Username</h4>
+            <h4 class="modal-title">Student ID</h4>
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             
             <!-- Modal body -->
             <div class="modal-body">
-                <input id="username">
+                <input id="student_id">
             </div>
             
             <!-- Modal footer -->
@@ -43,8 +44,8 @@
 
 {% block script %}
 <script>
-    function view_modal(username){
-        document.getElementById("username").value = username;
+    function view_modal(id){
+        document.getElementById("student_id").value = id;
     }
 </script>
 {% endblock %}

@@ -176,6 +176,20 @@ def start_walkin(department_id):
 
 #_________________________________
 # Login-required: yes
+# parameter: 
+# role: admin, supervisor
+# Description: view list of students from database
+@app.route('/students/view',methods=['GET', 'POST'])
+@login_required
+def view_students():
+    if current_user.is_authorized(['admin', 'supervisor']) == False: abort(403)
+    students = Student.query.all()  
+    return render_template('/student/view.html', title="View Students", students=students)
+
+
+
+#_________________________________
+# Login-required: yes
 # parameter: profile_id
 # role: any
 # Description: Add student, Add user, add role

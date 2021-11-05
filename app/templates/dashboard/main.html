@@ -6,7 +6,7 @@
         {% if current_user.is_authorized(["admin"]) %}
         <a href="{{url_for('view_user')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Users</a>
         <a href="{{url_for('view_employees')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Employees</a>
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Students</a>
+        <a href="{{url_for('view_students')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Students</a>
         <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Maintenance</a>
         {% endif %}
     </div>
