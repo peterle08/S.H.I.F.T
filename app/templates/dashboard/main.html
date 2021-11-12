@@ -1,28 +1,36 @@
 {% extends "/base/auth.html" %}
 
 {% block content %}
-<div class="container">
-    <div class="mb-3 row">
+<div class="container" style="height: 100vh;">
+    <div class="m-auto p-5 border border-info rounded-lg">
         {% if current_user.is_authorized(["admin"]) %}
-        <a href="{{url_for('view_user')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Users</a>
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Employees</a>
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Students</a>
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Maintenance</a>
+        <h4>Administrator</h4>
+        <hr>
+        <div class="mb-3 row">
+            <a href="{{url_for('view_user')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Manage Users</a>
+            <a href="{{url_for('view_employees')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Manage Employees</a>
+            <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Manage Students</a>
+            <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-3 col-lg-2">Maintenance</a>
+        </div>
         {% endif %}
-    </div>
-    <div class="mb-3 row">
         {% if current_user.is_authorized(["employee"]) %}
-        <a href="{{url_for('shift_all')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">View All Schedule</a>
+        <h4>Employment</h4>
+        <hr>
+        <div class="mb-3 row">
+            <a href="{{url_for('shift_all')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">View All Schedule</a>
+            {% if current_user.is_authorized(["supervisor"]) %}
+            <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Shift Swap Request</a>
+            <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">My Staffs</a>
+            <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Walkin</a>
+            {% endif %}
+        </div>
         {% endif %}
-        {% if current_user.is_authorized(["supervisor"]) %}
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Shift Swap Request</a>
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">My Staffs</a>
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Walkin</a>
-        {% endif %}
-    </div>
-    <div class="mb-3 row">
         {% if current_user.is_authorized(["student"]) %}
-        <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Tutor Availability</a>
+        <h4>Student</h4>
+        <hr>
+        <div class="mb-3 row">
+            <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Tutor Availability</a>
+        </div>
         {% endif %}
     </div>
 </div>

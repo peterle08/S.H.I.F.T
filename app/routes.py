@@ -8,7 +8,7 @@ from datetime import date, datetime, timedelta
 from werkzeug.utils import append_slash_redirect
 from app.classes import Fetch, Function, Insert, Update
 
-from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm
+from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm, AddShiftForm
 from app.email import Email
 from app import app
 from app.models import Appointment, Profile, User, Department, Student, Role, Employee
@@ -226,6 +226,24 @@ def add_employee(profile_id):
             Insert.role(user.id, "employee")
         # redirect to????
     return render_template('/employee/add.html', title="Add User", form=form, departments=departments, employee=employee, user=user)
+
+
+#_________________________________
+# Login-required: yes
+# parameter:
+# role: admin, supervisor
+# Description: View employee list
+@app.route('/employees/view',methods=['GET', 'POST'])
+@login_required
+def view_employees():
+    form = AddShiftForm()
+    if current_user.is_authorized(['admin', 'supervisor']) == False: abort(403)
+    employees = Employee.query.all()  
+    if form.validate_on_submit():
+        Insert.schedule(form)
+        return redirect(url_for('view_employees'))
+    return render_template('/employee/view.html', title="View Employees", employees=employees, form=form)
+
 
 #============================== Calendar  ===================================
 #_________________________________

@@ -25,6 +25,39 @@
     box-shadow: 0px 0px black;
 }
 
+
+/* footer styling */
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #2b7A78;
+    color: #DEF2F1;
+    text-align: center;
+    font-family: Verdana;
+    font-weight: 600;
+    padding-top: 15px;
+}
+
+.footer p {
+    color: #DEF2F1;
+    text-align: center;
+    font-family: Verdana;
+    font-weight: 500;
+}
+
+.footer img {
+    /*display: block;*/
+    float: center;
+    width: 50px;
+    height: 50px;
+    background: #DEF2F1;
+}
+
+/* end footer styling */
+
 /* Modal - from bs4 */
 .modal {
     background-color: #126360da; /* Black w/ opacity */
@@ -47,4 +80,16 @@
 .bg-shift-transparent{
     background-color: #2c928f73; /* Black w/ opacity */
     background-color: #288a8657; /* Fallback color */
+}
+
+/* fullcalendar */
+#calendar th{
+    background: #126360da;
+}
+#calendar a{
+    color: white;
+}
+#calendar button {
+    background-color: #3AAFA9;
+    color: #DEF2F1;
 }
