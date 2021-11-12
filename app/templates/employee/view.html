@@ -1,45 +1,115 @@
 {% extends "/base/auth.html" %}
 
+
+
 {% block content %}
+
+{{dayofweek}}
+
 <div class="container">
     <table class="table">
         <tbody>
             {% for employee in employees: %}
-            <tr onclick="view_modal('{{employee.id}}')" data-toggle="modal" data-target="#myModal">
+                <tr>
                 <td>{{employee.profile.first_name}}</td>
                 <td>{{employee.profile.last_name}}</td>
                 <td>{{employee.department.name}}</td>
-            </tr>
+                <td>
+                    <button type="button" class="btn btn-primary shiftbutton" data-toggle="modal" data-target="#addShift{{loop.index}}">
+                        Add Schedule
+                    </button>  
+                </td>  
+                </tr>
             {% endfor %}
         </tbody>
     </table>
 
 </div>
 
-    <!-- The Modal -->
-    <div class="modal" id="myModal">
-        <div class="modal-dialog">
-        <div class="modal-content">
+
+{% for employee in employees: %}
+
+<div class="modal" id="addShift{{loop.index}}">
+    <div class="modal-dialog">
+    <div class="modal-content">
+    
+        <!-- Modal Header -->
+        <div class="modal-header">
+        <h4 class="modal-title"> {{employee.profile.last_name}} , {{employee.profile.first_name}} </h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
         
-            <!-- Modal Header -->
-            <div class="modal-header">
-            <h4 class="modal-title">Modal Heading</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            
-            <!-- Modal body -->
-            <div class="modal-body">
-                <input id="employee_id">
-            </div>
-            
-            <!-- Modal footer -->
-            <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-            </div>
-            
+        <!-- Modal body -->
+        <div class="modal-body ">
+            <form action="" method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-group" style="text-align: center;">
+                    {{ form.employee_id(class="hidden",style="display:none;", value=employee.id )}}
+                    <h4 class="control-label">Schedule Term</h4>
+                    <div class="custom-control-inline">
+                        {{ form.start_date.label(class="control-label col-3")}}
+                        {{ form.start_date(class="form-control col-3" )}}
+
+                        {{ form.end_date.label(class="control-label col-3")}}
+                        {{ form.end_date(class="form-control col-3" )}}
+                    </div>
+                    <h5 class="control-label">Monday</h5>
+                    <div class="custom-control-inline">
+                        {{ form.monday_start.label(class="control-label col-3")}}
+                        {{ form.monday_start(class="form-control col-3" )}}
+
+                        {{ form.monday_end.label(class="control-label col-3")}}
+                        {{ form.monday_end(class="form-control col-3" )}}
+                    </div>
+                    <h5 class="control-label">Tuesday</h5>
+                    <div class="custom-control-inline">
+                        {{ form.tuesday_start.label(class="control-label col-3")}}
+                        {{ form.tuesday_start(class="form-control col-3" )}}
+
+                        {{ form.tuesday_end.label(class="control-label col-3")}}
+                        {{ form.tuesday_end(class="form-control col-3" )}}
+                    </div>
+                    <h5 class="control-label">Wednesday</h5>
+                    <div class="custom-control-inline">
+                        {{ form.wednesday_start.label(class="control-label col-3")}}
+                        {{ form.wednesday_start(class="form-control col-3" )}}
+
+                        {{ form.wednesday_end.label(class="control-label col-3")}}
+                        {{ form.wednesday_end(class="form-control col-3" )}}
+                    </div>
+                    <h5 class="control-label">Thursday</h5>
+                    <div class="custom-control-inline">
+                        {{ form.thursday_start.label(class="control-label col-3")}}
+                        {{ form.thursday_start(class="form-control col-3" )}}
+
+                        {{ form.thursday_end.label(class="control-label col-3")}}
+                        {{ form.thursday_end(class="form-control col-3" )}}
+                    </div>
+                    <h5 class="control-label">Friday</h5>
+                    <div class="custom-control-inline">
+                        {{ form.friday_start.label(class="control-label col-3")}}
+                        {{ form.friday_start(class="form-control col-3" )}}
+
+                        {{ form.friday_end.label(class="control-label col-3")}}
+                        {{ form.friday_end(class="form-control col-3" )}}
+                    </div>
+                <hr>
+                    {{ form.submit(class="btn btn-outline-info", style="width:100%;")}}
+                </div>
+            </form>
         </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
         </div>
+        
     </div>
+    </div>
+</div>
+
+{% endfor %}
+
 {% endblock %}
 
 {% block script %}
