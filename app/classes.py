@@ -5,6 +5,11 @@ from operator import and_
 from os import stat_result
 import string
 import random
+from datetime import timedelta, date, datetime
+from time import time
+from sqlalchemy.sql.elements import Null
+
+from wtforms.fields.core import TimeField
 
 from app.models import Appointment, Department, Student, User, Profile, Setting, Role, Employee, Walkin, Shift
 from app import db
@@ -96,6 +101,53 @@ class Fetch:
         return Employee.query.filter_by(profile_id=profile_id).first()
 
 class Insert:
+    def schedule(form):
+        s = set()
+        if(form.monday_start.data is None and form.monday_end.data is None):
+            s.add(0)
+        if(form.tuesday_start.data is None  and form.tuesday_end.data is None):
+            s.add(1)
+        if(form.wednesday_start.data is None and form.wednesday_end.data is None):
+            s.add(2)
+        if(form.thursday_start.data is None and form.thursday_end.data is None):
+            s.add(3)
+        if(form.friday_start.data is None and form.friday_end.data is None):
+            s.add(4)
+
+        startDate = form.start_date.data
+        endDate = form.end_date.data
+        index = startDate
+
+        while index <= endDate:
+            if(index.weekday() != 5 and index.weekday() != 6):
+                shiftstart = form.monday_start.data
+                shiftend = form.monday_end.data
+                if(index.weekday() == 0):
+                    shiftstart = form.monday_start.data
+                    shiftend = form.monday_end.data
+                elif(index.weekday() == 1):
+                    shiftstart = form.tuesday_start.data
+                    shiftend = form.tuesday_end.data
+                elif(index.weekday() == 2):
+                    shiftstart = form.wednesday_start.data
+                    shiftend = form.wednesday_end.data
+                elif(index.weekday() == 3):
+                    shiftstart = form.thursday_start.data
+                    shiftend = form.thursday_end.data
+                elif(index.weekday() == 4):
+                    shiftstart = form.friday_start.data
+                    shiftend = form.friday_end.data
+                i = set()
+                i.add(index.weekday())
+                if(s.issuperset(i) == False):
+                    print(form.employee_id.data, index, shiftstart, shiftend)
+                    shft = Shift(employee_id = form.employee_id.data, date=index, start_time = shiftstart, end_time = shiftend)
+                    db.session.add(shft)
+                    db.session.commit()
+            index = index + timedelta(days=1) 
+        
+
+
     def profile(form):
         stmt = Profile(first_name=form.first_name.data, last_name=form.last_name.data, middle_name=form.middle_name.data,
                         preferred_name=form.preferred_name.data, gender=form.gender.data, phone=form.phone.data, email=form.email.data,

@@ -1,8 +1,10 @@
+from flask.app import Flask
 from flask_login.utils import confirm_login
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField, SelectField, DateField, DecimalField, IntegerField, FileField, FloatField
+from wtforms.fields.core import TimeField
 
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, length
+from wtforms.validators import DataRequired, Required, ValidationError, Email, EqualTo, length, Optional
 from flask_login import current_user, login_user
 from app.models import User
 from app.classes import Fetch, Function
@@ -93,3 +95,32 @@ class EditProfileForm(FlaskForm):
     def validate_phone(self, phone):
         if (phone.data).isnumeric() == False:
             raise ValidationError("Number only")
+
+
+class AddShiftForm(FlaskForm):
+    start_date = DateField('Start Date', format='%m/%d/%y', validators=[DataRequired()])
+    end_date = DateField('End Date', format='%m/%d/%y', validators=[DataRequired()])
+    employee_id = StringField('Employee ID', validators=[DataRequired()])
+
+    monday_start = TimeField('Start Time',validators=[Optional()])
+    monday_end = TimeField('End Time',validators=[Optional()])
+    tuesday_start = TimeField('Start Time',validators=[Optional()])
+    tuesday_end = TimeField('End Time',validators=[Optional()])
+    wednesday_start = TimeField('Start Time',validators=[Optional()])
+    wednesday_end = TimeField('End Time',validators=[Optional()])
+    thursday_start = TimeField('Start Time',validators=[Optional()])
+    thursday_end = TimeField('End Time',validators=[Optional()])
+    friday_start = TimeField('Start Time',validators=[Optional()])
+    friday_end = TimeField('End Time',validators=[Optional()])
+
+    submit = SubmitField('Save')
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
