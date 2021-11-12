@@ -114,11 +114,11 @@ class Insert:
         if(form.friday_start.data is None and form.friday_end.data is None):
             s.add(4)
 
-        startDate = form.start_date.data
-        endDate = form.end_date.data
-        index = startDate
+        start_date = form.start_date.data
+        end_date = form.end_date.data
+        index = start_date
 
-        while index <= endDate:
+        while index <= end_date:
             if(index.weekday() != 5 and index.weekday() != 6):
                 shiftstart = form.monday_start.data
                 shiftend = form.monday_end.data
@@ -140,7 +140,6 @@ class Insert:
                 i = set()
                 i.add(index.weekday())
                 if(s.issuperset(i) == False):
-                    print(form.employee_id.data, index, shiftstart, shiftend)
                     shft = Shift(employee_id = form.employee_id.data, date=index, start_time = shiftstart, end_time = shiftend)
                     db.session.add(shft)
                     db.session.commit()
