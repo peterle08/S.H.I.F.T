@@ -120,7 +120,7 @@ class Student(UserMixin, db.Model):
     # relationship
     profile = db.relationship("Profile", back_populates="student")
     department = db.relationship("Department", back_populates="student")
-    tutor = db.relationship("Tutor", back_populates="student")
+    # tutor = db.relationship("Tutor", back_populates="student")
     appointment = db.relationship("Appointment", back_populates="student")
     walkin = db.relationship("Walkin", back_populates="student")
 
@@ -179,9 +179,9 @@ class Course(UserMixin, db.Model):
     __tablename__ = "course"
     id = db.Column(db.String(15), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+
     # relationship
     tutor = db.relationship("Tutor", back_populates="course")
-
     def __repr__(self):
         return '<Course {}>'.format([self.id, self.name])
 
@@ -192,16 +192,15 @@ class Tutor(UserMixin, db.Model):
 
     employee_id = db.Column(db.String(15), db.ForeignKey('employee.id'))
     course_id = db.Column(db.String(15), db.ForeignKey('course.id')) 
-    student_id = db.Column(db.String(15),  db.ForeignKey('student.id'))
-    __table_args__ = (db.PrimaryKeyConstraint('employee_id', 'course_id', 'student_id'),)
+
+    __table_args__ = (db.PrimaryKeyConstraint('employee_id', 'course_id',),)
 
     # relationships
     employee = db.relationship("Employee", back_populates="tutor")
     course = db.relationship("Course", back_populates="tutor")
-    student = db.relationship("Student", back_populates="tutor")
 
     def __repr__(self):
-        return '<Tutor {}>'.format([self.student_id, self.employee_id, self.course_id])
+        return '<Tutor {}>'.format([self.employee_id, self.course_id])
 
 class Department(UserMixin, db.Model):
     __tablename__ = "department"

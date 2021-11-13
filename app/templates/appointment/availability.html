@@ -1,0 +1,96 @@
+{% extends "/base/auth.html" %}
+
+{% block head %}
+    <link href='/static/fullcalendar/fullcalendar/main.css' rel='stylesheet' />
+    <script src='/static/fullcalendar/fullcalendar/main.js'></script>
+    <style>
+        .label{
+            width: 65px;
+            color: rgb(12, 107, 110);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            <div class="form-inline">
+                <select id="course_id" name="course_id" value="" class="form-control" required>
+                    <option value="" selected disabled>Select Course</option>
+                    <option disabled>--------------</option>
+                {% for course in courses: %}
+                    {% if selected_options['course_id'] == course.id %}
+                    <option value="{{course.id}}" selected>
+                    {% else %}
+                    <option value="{{course.id}}" >
+                    {% endif %}
+                    {{ course.name }}</option>
+                {% endfor %}
+                </select>
+                <select id="department_id" name="department_id" value="" class="form-control m-2" required >
+                    <option value="" selected disabled>Select Department & Campus</option>
+                    <option disabled>--------------</option>
+                {% for department in departments: %}
+                    {% if selected_options['department_id'] == department.id %}
+                    <option value="{{department.id}}" selected>{{department.name}} - {{department.location}}</option>
+                    {% else %}
+                    <option value="{{department.id}}">{{department.name}} - {{department.location}}</option>
+                    {% endif %}
+                {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-outline-info">Search</button>
+            </div>
+        </div>
+        {% for error in form.student_id.errors %}
+        <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+        {% for error in form.end_time.errors %}
+        <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+
+        {% if selected_options['department_id'] and selected_options['course_id'] %}
+        <div class="modal" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="labelTitle"></h6>
+                    </div>
+                    <div class="modal-body ">
+                        <div class="form-group">
+                            <div class="form-inline">
+                                <span class="fa fa-calendar label"> Date</span>
+                                {{ form.date(class="form-control")}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-inline">
+                                <span class="fa fa-clock label"> From</span>
+                                {{ form.start_time(id="start_time", class="form-control mr-2")}}
+                                <span class="mr-2"> To </span>
+                                {{ form.end_time(class="form-control")}}
+                            </div>
+                        </div>
+                        {{ form.student_id(type='hidden', value=student_id)}}
+                        {{ form.employee_id(type='hidden')}}
+                        <hr>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-outline-info w-100">Book</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <input id="viewStyle" type="hidden" value="timeGridWeek">
+        <input id="viewStyleButton" type="hidden" value="timeGridWeek,dayGridMonth">
+    </form>
+    <div id="calendar"></div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+    {% include '/script/tutor_availability.html' %}
+{% endblock %}

@@ -1,10 +1,8 @@
-from flask.app import Flask
-from flask_login.utils import confirm_login
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField, SelectField, DateField, DecimalField, IntegerField, FileField, FloatField
-from wtforms.fields.core import TimeField
+from wtforms.fields.html5 import DateField, TimeField
 
-from wtforms.validators import DataRequired, Required, ValidationError, Email, EqualTo, length, Optional
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, length, Optional
 from flask_login import current_user, login_user
 from app.models import User
 from app.classes import Fetch, Function
@@ -114,6 +112,21 @@ class AddShiftForm(FlaskForm):
     friday_end = TimeField('End Time',validators=[Optional()])
 
     submit = SubmitField('Save')
+
+class AddAppointmentForm(FlaskForm):
+    date = DateField('Date', validators=[DataRequired()])
+    start_time = TimeField('Start Time', validators=[DataRequired()])
+    end_time = TimeField('End Time', validators=[DataRequired()])
+    student_id = StringField('Student ID',)
+    employee_id = StringField('Employee ID',)
+
+    def validate_student_id(self, student_id):
+        if not Function.is_valid_appointment(student_id.data, self.employee_id.data, self.start_time.data, self.end_time.data):
+            raise ValidationError("The tutor is unavailable or Time Conflict")
+
+    def validate_end_time(self, end_time):
+        if end_time.data <= self.start_time.data:
+            raise ValidationError("Invalid Time Range")
     
     
     
