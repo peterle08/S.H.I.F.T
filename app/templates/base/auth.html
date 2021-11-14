@@ -54,6 +54,11 @@
                 <li class="nav-item">
                   <a href="{{url_for('appointments',)}}" class="nav-link text-decoration-none" >Appointment</a>
                 </li>
+                {% if current_user.is_authorized(["supervisor", "assistant"]) %}
+                <li class="nav-item">
+                    <a href="{{url_for('view_walkin')}}" class="nav-link text-decoration-none" >Drop-in</a>
+                  </li>
+                {% endif %}
             </ul>
         </div>
         <div class="dropdown dropleft">

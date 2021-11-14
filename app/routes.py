@@ -1,10 +1,10 @@
 import re
 from flask import render_template, redirect, url_for, request, json, abort
 from flask_login import current_user, logout_user, login_required
-from sqlalchemy.sql.elements import Null
+
 from werkzeug.urls import url_parse
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 from app.classes import Fetch, Function, Insert, Update, Delete
 
@@ -12,7 +12,7 @@ from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm
                         AddShiftForm, AddAppointmentForm
 from app.email import Email
 from app import app
-from app.models import Appointment, Course, Profile, Tutor, User, Department, Student, Role, Employee
+from app.models import Appointment, Course, Profile, User, Department, Student, Role, Employee, Walkin
 
 #_________________________________
 # Login-required: yes
@@ -394,3 +394,27 @@ def shift_personal():
     shifts =  []
     events = []
     return render_template('shift/personal.html', title="My Shift", events=events, shifts=shifts)
+
+#============================== Walkin  ===================================
+# Login-required: yes
+# Role: assistant & supervisor
+# parameter:
+# Description: view walkin/dropin
+@app.route('/walkin', methods=['GET', 'POST'])
+@login_required
+def view_walkin():
+    if current_user.is_authorized(['assistant', 'supervisor']) == False: abort(403)
+    picked_date = date.today()
+    # drop-in by department_id
+    department_id = current_user.profile.employee.department_id
+    walkin = Walkin.query.filter_by(department_id=department_id, status="w").order_by(Walkin.time_stamp).all()
+    if request.method == "POST":
+        action = request.form.get('action')
+        if action == "search":
+            picked_date = request.form.get("date")
+            walkin = Fetch.walkin_search(department_id, picked_date)
+        else:
+            index = int(request.form.get('index')) - 1
+            Update.walkin_status(walkin[index], "d")
+            walkin = Walkin.query.filter_by(department_id=department_id, status="w").order_by(Walkin.time_stamp).all()
+    return render_template('walkin/view.html', title="Walkin", walkin=walkin, picked_date=picked_date)
