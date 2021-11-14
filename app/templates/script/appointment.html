@@ -5,18 +5,17 @@
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            allDay: false, 
-            
+            navLinks: true,
             initialView: 'timeGridWeek',
             events : eventList,
-            editable: true,
             eventTimeFormat: { // like '14:30:00'
                 hour: 'numeric',
                 minute: '2-digit',
                 meridiem: 'short'
             },
             headerToolbar: {
-                right: 'dayGridMonth,timeGridWeek today prev,next',
+                left: 'dayGridMonth,timeGridWeek today prev,next',
+                right: null,
             },
             eventClick: function(info) {
                 let id = info.event.id;

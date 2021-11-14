@@ -285,7 +285,6 @@ def tutor_availability(student_id):
                 'title' : employee_name,
                 'start' : str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
                 'end' :  str(datetime.combine(shift.Shift.date, shift.Shift.end_time)),
-                'classNames': [ 'btn', 'btn-info' ],
             }
         )
         shifts.append(

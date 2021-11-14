@@ -7,6 +7,17 @@
 
 {% block content %}
 <div class="container">
+    <div class="frame">
+        {% if current_user.is_authorized(['student']) %}
+        <a class="btn btn-outline-info" href="{{url_for('tutor_availability', student_id=current_user.profile.student.id)}}">
+            <span class="fa fa-calendar-alt"> </span> Book Appointment
+        </a>
+        {% else %}
+        <a class="btn btn-outline-info" href="{{url_for('appointments')}}">
+            <span class="fa fa-calendar-alt"> </span> Appointments
+        </a>
+        {% endif %}
+    </div>
     <div id="calendar"></div>
 </div>
 

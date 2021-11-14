@@ -82,14 +82,32 @@
     background-color: #288a8657; /* Fallback color */
 }
 
+.frame{
+    margin: auto;
+    border: solid 2px rgb(12, 107, 110);
+    padding: 5px;
+    margin: 5px;
+}
 /* fullcalendar */
 #calendar th{
-    background: #126360da;
-}
-#calendar a{
-    color: white;
+    background: #125351da;
 }
 #calendar button {
-    background-color: #3AAFA9;
+    background-color: #0e3634da;
+    color: #ffffff;
+}
+#calendar button:focus {
+    background-color: #ffffff;
+    color: #0e3634da;
+}
+#calendar button:hover {
+    background-color: #ffffff;
+    color: #0e3634da;
+}
+
+.fc .fc-col-header-cell-cushion{
     color: #DEF2F1;
+}
+.fc .fc-daygrid-event-harness a {
+    border: solid 1px #126360da;
 }

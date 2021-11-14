@@ -6,16 +6,13 @@
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            headerToolbar: {
-                color: 'green',
-                right: 'prev,today,next',
-                center: viewStyleButtons,
-            }, 
-
             initialView: viewStyle,    // style to display
             events : eventList, // get the list of events
-            editable: true, // enable drag & drop
-            themeSystem: 'bootstrap',
+            navLinks: true,
+            headerToolbar: {
+                left: viewStyleButtons,
+                right:null,
+            },
             eventClick: function(info) {
                 let id = info.event.id;     // get event id
                 // show the modal

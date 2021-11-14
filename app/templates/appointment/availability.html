@@ -15,9 +15,10 @@
 <div class="container">
     <form action="" method="POST">
         {{ form.hidden_tag() }}
-        <div class="form-group">
+        <div class="frame">
             <div class="form-inline">
-                <select id="course_id" name="course_id" value="" class="form-control" required>
+                <label class="col-sm-3 col-md-3 m-2">Tutor Availability: </label>
+                <select id="course_id" name="course_id" value="" class="form-control col-sm-3 col-md-3" required>
                     <option value="" selected disabled>Select Course</option>
                     <option disabled>--------------</option>
                 {% for course in courses: %}
@@ -29,7 +30,7 @@
                     {{ course.name }}</option>
                 {% endfor %}
                 </select>
-                <select id="department_id" name="department_id" value="" class="form-control m-2" required >
+                <select id="department_id" name="department_id" value="" class="form-control col-sm-3 col-md-3" required >
                     <option value="" selected disabled>Select Department & Campus</option>
                     <option disabled>--------------</option>
                 {% for department in departments: %}
@@ -40,15 +41,15 @@
                     {% endif %}
                 {% endfor %}
                 </select>
-                <button type="submit" class="btn btn-outline-info">Search</button>
+                <button type="submit" class="btn btn-outline-info col-sm-2 col-md-2 m-2">Search</button>
             </div>
+            {% for error in form.student_id.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+            {% for error in form.end_time.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
         </div>
-        {% for error in form.student_id.errors %}
-        <span class="text-danger">{{ error }}</span>
-        {% endfor %}
-        {% for error in form.end_time.errors %}
-        <span class="text-danger">{{ error }}</span>
-        {% endfor %}
 
         {% if selected_options['department_id'] and selected_options['course_id'] %}
         <div class="modal" id="myModal">
@@ -84,7 +85,7 @@
         </div>
         {% endif %}
         <input id="viewStyle" type="hidden" value="timeGridWeek">
-        <input id="viewStyleButton" type="hidden" value="timeGridWeek,dayGridMonth">
+        <input id="viewStyleButton" type="hidden" value="dayGridMonth,timeGridWeek today prev,next">
     </form>
     <div id="calendar"></div>
 </div>
