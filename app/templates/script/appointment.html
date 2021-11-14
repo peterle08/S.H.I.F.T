@@ -28,11 +28,15 @@
                         }
                     },
                 )
-                document.getElementById("labelStudentName").innerHTML = appointments[id]["studentName"];
-                document.getElementById("labelDate").innerHTML = appointments[id]["date"];
+                
+                document.getElementById("labelTitle").innerHTML = appointments[id]["studentName"] + " with "+  appointments[id]["employeeName"];
+                document.getElementById("dateLabel").innerHTML = appointments[id]["date"];
                 document.getElementById("labelStartTime").innerHTML = appointments[id]["start"];
                 document.getElementById("labelEndTime").innerHTML = appointments[id]["end"];
-                document.getElementById("labelEmployeeName").innerHTML = appointments[id]["employeeName"];
+
+                document.getElementById("studentId").value = appointments[id]["studentId"];
+                document.getElementById("startTime").value = appointments[id]["start"];
+                document.getElementById("date").value = appointments[id]["date"];
             }
         });
         calendar.render();

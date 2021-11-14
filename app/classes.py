@@ -194,4 +194,7 @@ class Insert:
                         ))
         db.session.commit()
     
-    
+class Delete:
+    def appointment(date, start_time, student_id)  :
+        Appointment.query.filter_by(date=date, start_time=start_time, student_id=student_id).delete()
+        db.session.commit()

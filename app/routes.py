@@ -6,7 +6,7 @@ from werkzeug.urls import url_parse
 
 from datetime import date, datetime, timedelta
 
-from app.classes import Fetch, Function, Insert, Update
+from app.classes import Fetch, Function, Insert, Update, Delete
 
 from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
                         AddShiftForm, AddAppointmentForm
@@ -305,14 +305,18 @@ def tutor_availability(student_id):
 # Login-required: yes
 # parameter:
 # Description: View & Edit appointment(s)
-@app.route('/appointments')
+@app.route('/appointments', methods=['GET', 'POST'])
 @login_required
 def appointments():
+    if request.method == "POST":
+        Delete.appointment(request.form.get('date'), request.form.get('start_time'), request.form.get('student_id'))
+
     if current_user.is_authorized(['supervisor']):
         appointments = Appointment.query.all()
     elif current_user.is_authorized(['student']):
         appointments = Appointment.query.filter_by(student_id=current_user.profile.student.id).all()
-    appointments_dict = [] # map
+    # appointments & fc events
+    appointments_dict = []
     events = []
     index = 0
     for appointment in appointments:
