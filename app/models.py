@@ -1,7 +1,6 @@
 # created  by 
 
 from enum import unique
-from datetime import datetime, date, timedelta
 from time import time
 import jwt  # password reset token
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -173,7 +172,7 @@ class Walkin(UserMixin, db.Model):
     department = db.relationship("Department", back_populates="walkin")
 
     def __repr__(self):
-        return '<Walkin {}>'.format([self.student_id, self.date, self.start_time])
+        return '<Walkin {}>'.format([self.student_id, self.time_stamp,])
 
 class Course(UserMixin, db.Model):
     __tablename__ = "course"

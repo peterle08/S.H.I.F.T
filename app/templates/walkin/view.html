@@ -1,0 +1,54 @@
+{% extends "/base/auth.html" %}
+
+<!-- head -->
+{% block head %}
+{% endblock %}
+
+<!-- body -->
+{% block content %}
+    <div class="w-50 m-auto text-center">
+        <h4 class="text-bold">Student Drop-in</h4>
+        <hr>
+        <form action="" method="POST">
+            <div class="form-group">
+                <div class="form-inline">
+                    <label style="width: 80px;">Date:</label>
+                    <input type="date" name="date" value="{{picked_date}}" class="form-control" onchange="this.form.submit()">
+                    <input type="hidden" name="action" value="search">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% for checkin in walkin %}
+    <div class="row border border-info w-50 p-2" style="margin:auto; margin-bottom: 5px; min-width: 310px;">
+        <div style="width: 30px;">{{loop.index}}</div>
+        <div class="w-50 text-center">
+            <div><b>{{checkin.student.profile.first_name}} {{checkin.student.profile.last_name}}</b></div>
+            <hr class="m-0">
+            <span>({{checkin.time_stamp}})</span>
+            {% if checkin.status == 'w' %}
+            <div>
+                <form action="" method="POST">
+                    <button type="submit" class="btn btn-outline-success rounded-circle"><span class="fa fa-check"> </span></button>
+                    <input type="hidden" name="index" value="{{loop.index}}">
+                    <input type="hidden" name="action" value="checked">
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        <div class="text-left">
+            <div>Student ID: {{checkin.student.id}}</div>
+            <div>Email     : {{checkin.student.profile.email}}</div>
+            <div>Phone     :{{checkin.student.profile.phone}}</div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
+
+<!-- script -->
+{% block script %}
+<script>
+    
+</script>
+{% endblock %}

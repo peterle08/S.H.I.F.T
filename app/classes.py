@@ -6,7 +6,6 @@ import random
 from datetime import timedelta, date, datetime
 from time import time
 from sqlalchemy import func, and_, or_
-
 from app.models import Appointment, Department, Student, User, Profile, Setting, Role, Employee, Walkin, Shift, Tutor, Course
 from app import db
 
@@ -73,6 +72,9 @@ class Update:
         profile.zip_code = form.zip_code.data
         db.session.commit()
 
+    def walkin_status(walkin, status):
+        walkin.status = status
+        db.session.commit()
 class Fetch:
     def user_by_id(user_id):
         return User.query.filter_by(id=user_id).first()
@@ -112,6 +114,10 @@ class Fetch:
                             .filter(Employee.department_id==department_id, Tutor.course_id==course_id)\
                             .order_by(Shift.start_time)\
                             .all()
+    def walkin_search(department_id, picked_date):
+        return db.session.query(Walkin).filter(and_(func.date(Walkin.time_stamp)==picked_date, Walkin.department_id==department_id))\
+                        .order_by(Walkin.time_stamp).all()
+
 class Insert:
     def appointment(form):
         stmt = Appointment(date=form.date.data, start_time=form.start_time.data, end_time=form.end_time.data, 
