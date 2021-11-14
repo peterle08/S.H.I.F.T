@@ -1,18 +1,18 @@
 import re
 from flask import render_template, redirect, url_for, request, json, abort
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, logout_user, login_required
+from sqlalchemy.sql.elements import Null
 from werkzeug.urls import url_parse
 
 from datetime import date, datetime, timedelta
 
-from werkzeug.utils import append_slash_redirect
-from app.classes import Fetch, Function, Insert, Update
+from app.classes import Fetch, Function, Insert, Update, Delete
 
-from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm, AddShiftForm
+from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
+                        AddShiftForm, AddAppointmentForm
 from app.email import Email
 from app import app
-from app.models import Appointment, Profile, User, Department, Student, Role, Employee
-
+from app.models import Appointment, Course, Profile, Tutor, User, Department, Student, Role, Employee
 
 #_________________________________
 # Login-required: yes
@@ -246,40 +246,101 @@ def view_employees():
 
 
 #============================== Calendar  ===================================
-#_________________________________
 # Login-required: yes
 # parameter:
-# Description: view Appointment
-@app.route('/<user_id>/appointment/monthly')
+# Description: view shift - monthly
+@app.route('/tutor/availability/<student_id>', methods=['GET', 'POST'])
 @login_required
-def appointment_monthly(user_id):
+def tutor_availability(student_id):
+    if not current_user.is_authorized(['student', 'supervisor']): abort(403)
+    if current_user.is_authorized(['student']):
+        student_id = current_user.profile.student.id
+
+    form = AddAppointmentForm()
+    selected_options = {'department_id': None, 'course_id': None}
+    departments = Department.query.all()
+    courses = Course.query.all()
+    shift_list = []
+    if request.method == "POST":
+        # get department & course
+        selected_options['department_id'] = request.form.get('department_id')
+        selected_options['course_id'] = request.form.get('course_id')
+        # get tutor availability
+        shift_list = Fetch.tutor_availability(selected_options['department_id'], selected_options['course_id'])
+        if form.employee_id.data and form.validate_on_submit():
+            Insert.appointment(form)
+            return redirect(url_for('appointments'))
+    # shifts & events
+    shifts =  []
     events = []
-    appointments = Fetch.appointments_all()
-    app_list = []
+    index = 0
+    for shift in shift_list:
+        if (shift.Profile.preferred_name):
+            employee_name = shift.Profile.preferred_name
+        else: 
+            employee_name = shift.Profile.first_name
+        events.append(
+            {
+                'id' : str(index),
+                'title' : employee_name,
+                'start' : str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
+                'end' :  str(datetime.combine(shift.Shift.date, shift.Shift.end_time)),
+            }
+        )
+        shifts.append(
+            {
+                "employeeId": shift.Employee.id,
+                "employeeName":  employee_name,
+                "employeeEmail": shift.Profile.email,
+                "date": str(shift.Shift.date),
+                "start": str(shift.Shift.start_time),
+                "end": str(shift.Shift.end_time),
+                "status": shift.Shift.status
+            }
+        )
+        index += 1 # increase event_id
+    return render_template('appointment/availability.html', title="Tutor Availability", form=form, events=events, shifts=shifts,
+                        selected_options=selected_options, departments=departments, courses=courses, student_id=student_id)
+
+# Login-required: yes
+# parameter:
+# Description: View & Edit appointment(s)
+@app.route('/appointments', methods=['GET', 'POST'])
+@login_required
+def appointments():
+    if request.method == "POST":
+        Delete.appointment(request.form.get('date'), request.form.get('start_time'), request.form.get('student_id'))
+
+    if current_user.is_authorized(['supervisor']):
+        appointments = Appointment.query.all()
+    elif current_user.is_authorized(['student']):
+        appointments = Appointment.query.filter_by(student_id=current_user.profile.student.id).all()
+    # appointments & fc events
+    appointments_dict = []
+    events = []
     index = 0
     for appointment in appointments:
         events.append(
             {
                 'id' : str(index),
-                'title' : appointment.get_student_profile().first_name + " at " + str(appointment.start_time),
-                'start' : str(appointment.date), # str(datetime.combine(appointment.date, appointment.start_time)),
-                'end' :  str(appointment.date), #str(datetime.combine(appointment.date, appointment.end_time))
-                'classNames': [ 'btn', 'btn-info' ],
+                'title' : appointment.get_student_profile().first_name,
+                'start' : str(datetime.combine(appointment.date, appointment.start_time)),
+                'end' :  str(datetime.combine(appointment.date, appointment.end_time)),
             }
         )
-        app_list.append( # save to array of map for passing to js later
+        appointments_dict.append(
             {
                 "studentId": appointment.student_id,
                 "studentName":  appointment.get_student_profile().first_name,
                 "employeeId": appointment.employee_id,
                 "employeeName": appointment.get_employee_profile().first_name,
+                "date": str(appointment.date),
                 "start": str(appointment.start_time),
                 "end": str(appointment.end_time)
             }
         )
         index += 1
-
-    return render_template('appointment/monthly.html', title="Appointment (Monthly)", mycal=events, app_list=app_list)
+    return render_template('appointment/view.html', title="Appointments - Student Support", mycal=events, appointments_list=appointments_dict)
 
 #_________________________________
 # Login-required: yes
@@ -332,4 +393,4 @@ def shift_personal():
     # to add time to date:  str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
     shifts =  []
     events = []
-    return render_template('shift/personal.html', title="Shift - Weekly", events=events, shifts=shifts)
+    return render_template('shift/personal.html', title="My Shift", events=events, shifts=shifts)

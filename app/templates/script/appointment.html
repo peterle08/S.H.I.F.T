@@ -1,14 +1,22 @@
 <script>
     // need modified
     var eventList = {{ mycal | safe }};
-    var app = {{ app_list | tojson }};
+    var appointments = {{ appointments_list | tojson }};
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
+            navLinks: true,
+            initialView: 'timeGridWeek',
             events : eventList,
-            editable: true,
-            themeSystem: 'bootstrap',
+            eventTimeFormat: { // like '14:30:00'
+                hour: 'numeric',
+                minute: '2-digit',
+                meridiem: 'short'
+            },
+            headerToolbar: {
+                left: 'dayGridMonth,timeGridWeek today prev,next',
+                right: null,
+            },
             eventClick: function(info) {
                 let id = info.event.id;
                 document.getElementById("myModal").style.display = "block";
@@ -20,7 +28,15 @@
                         }
                     },
                 )
-                document.getElementById("first_name").value = app[id]["studentName"] + app[id]["start"]  ; // get student name
+                
+                document.getElementById("labelTitle").innerHTML = appointments[id]["studentName"] + " with "+  appointments[id]["employeeName"];
+                document.getElementById("dateLabel").innerHTML = appointments[id]["date"];
+                document.getElementById("labelStartTime").innerHTML = appointments[id]["start"];
+                document.getElementById("labelEndTime").innerHTML = appointments[id]["end"];
+
+                document.getElementById("studentId").value = appointments[id]["studentId"];
+                document.getElementById("startTime").value = appointments[id]["start"];
+                document.getElementById("date").value = appointments[id]["date"];
             }
         });
         calendar.render();

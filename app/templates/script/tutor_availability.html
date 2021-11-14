@@ -1,0 +1,39 @@
+<script>
+    let viewStyle = document.getElementById("viewStyle").value;
+    let viewStyleButtons = document.getElementById("viewStyleButton").value;
+    var eventList = {{ events | safe }};
+    var shifts = {{ shifts | tojson }};
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: viewStyle,    // style to display
+            events : eventList, // get the list of events
+            navLinks: true,
+            headerToolbar: {
+                left: viewStyleButtons,
+                right:null,
+            },
+            eventClick: function(info) {
+                let id = info.event.id;     // get event id
+                // show the modal
+                document.getElementById("myModal").style.display = "block";
+                // hide modal if click outside the modal
+                document.getElementById("myModal").addEventListener("click", (event) => {
+                        const myModal = document.getElementById("myModal");
+                        let eventTarget = event.target;
+                        if(eventTarget == myModal) {
+                            myModal.style.display = "none";
+                        }
+                    },
+                )
+
+                document.getElementById("date").value = shifts[id]["date"];
+                document.getElementById("labelTitle").innerHTML = "Appointment with " + shifts[id]["employeeName"];
+                document.getElementById("employee_id").value = shifts[id]["employeeId"];
+                document.getElementById("start_time").setAttribute("min", shifts[id]["start"]);
+                document.getElementById("end_time").setAttribute("max", shifts[id]["end"]);
+            },
+        });
+        calendar.render();
+    });
+</script>

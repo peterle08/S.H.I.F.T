@@ -1,17 +1,13 @@
 # Created & Developed by ...
 # Copyright 2021
 
-from operator import and_
-from os import stat_result
 import string
 import random
 from datetime import timedelta, date, datetime
 from time import time
-from sqlalchemy.sql.elements import Null
+from sqlalchemy import func, and_, or_
 
-from wtforms.fields.core import TimeField
-
-from app.models import Appointment, Department, Student, User, Profile, Setting, Role, Employee, Walkin, Shift
+from app.models import Appointment, Department, Student, User, Profile, Setting, Role, Employee, Walkin, Shift, Tutor, Course
 from app import db
 
 class Function:
@@ -48,6 +44,16 @@ class Function:
         
         if len(map) < 4: return False
         return True
+    
+    def is_valid_appointment(student_id, employee_id, start_time, end_time):
+        appointment = db.session.query(Appointment)\
+                            .filter( and_(
+                                        or_(Appointment.employee_id==employee_id, Appointment.student_id==student_id),
+                                        or_(Appointment.start_time <= end_time, and_(Appointment.start_time <= start_time, Appointment.end_time >= start_time)))
+                            ).first()
+        if appointment:
+            return False
+        return True
 
 class Update:
     def password(user, password):   # update password
@@ -83,12 +89,6 @@ class Fetch:
     def user_by_profile(profile_id):
         return User.query.filter_by(profile_id=profile_id).first()
 
-    def appointments_all():
-        return db.session.query(Appointment)\
-                        .join(Student, Appointment.student_id==Student.id)\
-                        .join(Employee, Appointment.employee_id==Employee.id)\
-                        .all()
-
     def shift_by_department(department_id):
         return db.session.query(Shift, Employee, Profile)\
                             .join(Employee, Shift.employee_id==Employee.id)\
@@ -100,7 +100,25 @@ class Fetch:
     def employee_by_profile(profile_id):
         return Employee.query.filter_by(profile_id=profile_id).first()
 
+    # course
+    def course_by_id(course_id):
+        return Course.query.filter_by(id=course_id).first()
+    
+    def tutor_availability(department_id, course_id):
+        return db.session.query(Shift, Employee, Profile)\
+                            .join(Employee, Shift.employee_id==Employee.id)\
+                            .join(Tutor, Tutor.employee_id==Employee.id)\
+                            .join(Profile, Profile.id==Employee.profile_id)\
+                            .filter(Employee.department_id==department_id, Tutor.course_id==course_id)\
+                            .order_by(Shift.start_time)\
+                            .all()
 class Insert:
+    def appointment(form):
+        stmt = Appointment(date=form.date.data, start_time=form.start_time.data, end_time=form.end_time.data, 
+                            employee_id=form.employee_id.data, student_id=form.student_id.data, status="booked")
+        db.session.add(stmt)
+        db.session.commit()
+
     def schedule(form):
         s = set()
         if(form.monday_start.data is None and form.monday_end.data is None):
@@ -145,8 +163,6 @@ class Insert:
                     db.session.commit()
             index = index + timedelta(days=1) 
         
-
-
     def profile(form):
         stmt = Profile(first_name=form.first_name.data, last_name=form.last_name.data, middle_name=form.middle_name.data,
                         preferred_name=form.preferred_name.data, gender=form.gender.data, phone=form.phone.data, email=form.email.data,
@@ -178,4 +194,7 @@ class Insert:
                         ))
         db.session.commit()
     
-    
+class Delete:
+    def appointment(date, start_time, student_id)  :
+        Appointment.query.filter_by(date=date, start_time=start_time, student_id=student_id).delete()
+        db.session.commit()
