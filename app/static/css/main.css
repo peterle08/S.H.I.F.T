@@ -29,25 +29,18 @@ html {
     height: 100%;
 }
 
-body {
-    padding-bottom: 25px;
-    min-height: 100%;
-}
-
 /* footer styling */
 
 .footer {
     position: fixed;
-    height: 25px;
-    left: 0;
-    bottom: 0;
     width: 100%;
+    bottom: 0;
     background-color: #2b7A78;
     color: #DEF2F1;
     text-align: center;
     font-family: Verdana;
-    font-weight: 500;
-    /*padding-top: 15px;*/
+    font-size: small;
+    z-index: 1;
 }
 
 .footer img {
