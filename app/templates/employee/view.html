@@ -1,51 +1,182 @@
 {% extends "/base/auth.html" %}
 
 {% block content %}
+<div class="container text-center">
+    <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#newEmployee">
+        <span class="fa fa-plus"></span> Add Employee
+    </button>
+
+</div>
+{% for error in role_form.user_id.errors %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endfor %}
+<hr>
 <div class="container">
     <table class="table">
         <tbody>
             {% for employee in employees: %}
-            <tr onclick="view_modal('{{employee.id}}')" data-toggle="modal" data-target="#myModal">
+                <tr>
                 <td>{{employee.profile.first_name}}</td>
                 <td>{{employee.profile.last_name}}</td>
                 <td>{{employee.department.name}}</td>
-            </tr>
+                <td>
+                    <button type="button" class="btn btn-primary shiftbutton" data-toggle="modal" data-target="#addShift{{loop.index}}">
+                        Add Schedule
+                    </button>  
+                </td>
+                <td>
+                    <button type="button" class="btn btn-info" data-toggle="modal" onclick="showRoleModal('{{employee.profile.user.id}}', '{{employee.profile.first_name}}', '{{employee.profile.last_name}}')">
+                        Add Role
+                    </button>  
+                </td>   
+                </tr>
             {% endfor %}
         </tbody>
     </table>
 
 </div>
 
-    <!-- The Modal -->
-    <div class="modal" id="myModal">
-        <div class="modal-dialog">
-        <div class="modal-content">
-        
-            <!-- Modal Header -->
-            <div class="modal-header">
-            <h4 class="modal-title">Modal Heading</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            
-            <!-- Modal body -->
-            <div class="modal-body">
-                <input id="employee_id">
-            </div>
-            
-            <!-- Modal footer -->
-            <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-            </div>
-            
+
+{% for employee in employees: %}
+
+<div class="modal" id="addShift{{loop.index}}">
+    <div class="modal-dialog">
+    <div class="modal-content">
+    
+        <!-- Modal Header -->
+        <div class="modal-header">
+        <h4 class="modal-title"> {{employee.profile.last_name}} , {{employee.profile.first_name}} </h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body ">
+            <form action="" method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-group" style="text-align: center;">
+                    {{ form.employee_id(class="hidden",style="display:none;", value=employee.id )}}
+                    <h4 class="control-label">Schedule Term</h4>
+                    <div class="custom-control-inline">
+                        {{ form.start_date.label(class="control-label col-3")}}
+                        {{ form.start_date(class="form-control col-3" )}}
+
+                        {{ form.end_date.label(class="control-label col-3")}}
+                        {{ form.end_date(class="form-control col-3" )}}
+                    </div>
+                    <h5 class="control-label">Monday</h5>
+                    <div class="custom-control-inline">
+                        {{ form.monday_start.label(class="control-label col-3")}}
+                        {{ form.monday_start(class="form-control col-3" )}}
+
+                        {{ form.monday_end.label(class="control-label col-3")}}
+                        {{ form.monday_end(class="form-control col-3" )}}
+                    </div>
+                    <h5 class="control-label">Tuesday</h5>
+                    <div class="custom-control-inline">
+                        {{ form.tuesday_start.label(class="control-label col-3")}}
+                        {{ form.tuesday_start(class="form-control col-3" )}}
+
+                        {{ form.tuesday_end.label(class="control-label col-3")}}
+                        {{ form.tuesday_end(class="form-control col-3" )}}
+                    </div>
+                    <h5 class="control-label">Wednesday</h5>
+                    <div class="custom-control-inline">
+                        {{ form.wednesday_start.label(class="control-label col-3")}}
+                        {{ form.wednesday_start(class="form-control col-3" )}}
+
+                        {{ form.wednesday_end.label(class="control-label col-3")}}
+                        {{ form.wednesday_end(class="form-control col-3" )}}
+                    </div>
+                    <h5 class="control-label">Thursday</h5>
+                    <div class="custom-control-inline">
+                        {{ form.thursday_start.label(class="control-label col-3")}}
+                        {{ form.thursday_start(class="form-control col-3" )}}
+
+                        {{ form.thursday_end.label(class="control-label col-3")}}
+                        {{ form.thursday_end(class="form-control col-3" )}}
+                    </div>
+                    <h5 class="control-label">Friday</h5>
+                    <div class="custom-control-inline">
+                        {{ form.friday_start.label(class="control-label col-3")}}
+                        {{ form.friday_start(class="form-control col-3" )}}
+
+                        {{ form.friday_end.label(class="control-label col-3")}}
+                        {{ form.friday_end(class="form-control col-3" )}}
+                    </div>
+                <hr>
+                    {{ form.submit(class="btn btn-outline-info", style="width:100%;")}}
+                    <input type="hidden" name="action" value="shift">
+                </div>
+            </form>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        
+    </div>
+    </div>
+</div>
+{% endfor %}
+<div class="modal fade" id="newEmployee">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">New Employee</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                        <span class="input-group-text far fa-envelope text-info"></span>
+                        </div>
+                        <input id="employeeEmail" type="text" placeholder="employee's Email" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-outline-info w-100" onclick="redirectTo()">Next</button>
+                </div>
+            </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="newRole">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="labelRole">New Roles</h4>
+            </div>
+            <div class="modal-body">
+                <form action="" method="POST">
+                    {{ role_form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ role_form.role_name(class="form-control")}}
+                        {{ role_form.user_id(type="hidden")}}
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-outline-info w-100">Save</button>
+                    </div>
+                    <input type="hidden" name="action" value="role">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block script %}
 <script>
-    function view_modal(id){
-        document.getElementById("employee_id").value = id;
+    function redirectTo(){
+        let link = "/profile/validate/" + document.getElementById("employeeEmail").value;
+        location.href = link;
+    }
+    function showRoleModal(userId, firstName, lastName){
+        $('#newRole').modal('show');
+        document.getElementById("labelRole").innerHTML = firstName + " " + lastName;
+        document.getElementById("user_id").value = userId;
     }
 </script>
 {% endblock %}

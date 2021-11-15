@@ -1,0 +1,90 @@
+{% extends "/base/auth.html" %}
+
+{% block head %}
+    <link href='/static/fullcalendar/fullcalendar/main.css' rel='stylesheet' />
+    <script src='/static/fullcalendar/fullcalendar/main.js'></script>
+    <style>
+        .label {
+            width: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="frame">
+        {% if current_user.is_authorized(['student']) %}
+        <a class="btn btn-outline-info" href="{{url_for('tutor_availability', student_id=current_user.profile.student.id)}}">
+            <span class="fa fa-calendar-alt"> </span> Book Appointment
+        </a>
+        {% else %}
+        <a class="btn btn-outline-info" href="{{url_for('appointments')}}">
+            <span class="fa fa-calendar-alt"> </span> Appointments
+        </a>
+        {% endif %}
+    </div>
+    <div id="calendar"></div>
+</div>
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="labelTitle"></h6>
+            </div>
+            <div class="modal-body ">
+                <div class="form-group">
+                    <div class="form-inline">
+                        <span class="fa fa-calendar label"> Date</span>
+                        <label id="dateLabel"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-inline">
+                        <span class="fa fa-clock label"> From</span>
+                        <label id="labelStartTime">asdfasdf</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-inline">
+                        <span class="fa fa-clock label"> To</span>
+                        <label id="labelEndTime">asdfas</label>
+                    </div>
+                </div>
+                <hr>
+                <form action="" method="POST">
+                    <div class="form-group" id="cancelButton" onclick="showConfirmation()">
+                        <button type="button" class="btn btn-danger w-100">Cancel Appointment</button>
+                    </div>
+                    <div style="display: none;" class="form-group" id="confirm">
+                        <b class="m-auto text-danger">Are you sure to Cancel This Appoinement?</b>
+                        <br><br>
+                        <div class="form-inline">
+                            <button type="submit" class="btn btn-outline-danger m-auto w-30">Yes</button>
+                            <button type="button" class="btn btn-secondary m-auto w-30" onclick="deny()">No</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="student_id" id="studentId">
+                    <input type="hidden" name="start_time" id="startTime">
+                    <input type="hidden" name="date" id="date">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+    {% include '/script/appointment.html' %}
+    <script>
+        function deny(){
+            document.getElementById("cancelButton").style.display = "block";
+            document.getElementById("confirm").style.display = "none";
+        };
+        function showConfirmation(){
+            document.getElementById("cancelButton").style.display = "none";
+            document.getElementById("confirm").style.display = "block";
+        };
+    </script>
+{% endblock %}

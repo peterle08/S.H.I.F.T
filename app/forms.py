@@ -1,10 +1,10 @@
-from flask_login.utils import confirm_login
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField, SelectField, DateField, DecimalField, IntegerField, FileField, FloatField
+from wtforms.fields.html5 import DateField, TimeField
 
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, length
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, length, Optional
 from flask_login import current_user, login_user
-from app.models import User
+from app.models import User, Role
 from app.classes import Fetch, Function
 
 class LoginForm(FlaskForm):
@@ -93,3 +93,49 @@ class EditProfileForm(FlaskForm):
     def validate_phone(self, phone):
         if (phone.data).isnumeric() == False:
             raise ValidationError("Number only")
+
+
+class AddShiftForm(FlaskForm):
+    start_date = DateField('Start Date', format='%m/%d/%y', validators=[DataRequired()])
+    end_date = DateField('End Date', format='%m/%d/%y', validators=[DataRequired()])
+    employee_id = StringField('Employee ID', validators=[DataRequired()])
+
+    monday_start = TimeField('Start Time',validators=[Optional()])
+    monday_end = TimeField('End Time',validators=[Optional()])
+    tuesday_start = TimeField('Start Time',validators=[Optional()])
+    tuesday_end = TimeField('End Time',validators=[Optional()])
+    wednesday_start = TimeField('Start Time',validators=[Optional()])
+    wednesday_end = TimeField('End Time',validators=[Optional()])
+    thursday_start = TimeField('Start Time',validators=[Optional()])
+    thursday_end = TimeField('End Time',validators=[Optional()])
+    friday_start = TimeField('Start Time',validators=[Optional()])
+    friday_end = TimeField('End Time',validators=[Optional()])
+
+    submit = SubmitField('Save')
+
+class AddAppointmentForm(FlaskForm):
+    date = DateField('Date', validators=[DataRequired()])
+    start_time = TimeField('Start Time', validators=[DataRequired()])
+    end_time = TimeField('End Time', validators=[DataRequired()])
+    student_id = StringField('Student ID',)
+    employee_id = StringField('Employee ID',)
+
+    def validate_student_id(self, student_id):
+        if not Function.is_valid_appointment(student_id.data, self.employee_id.data, self.start_time.data, self.end_time.data):
+            raise ValidationError("The tutor is unavailable or Time Conflict")
+
+    def validate_end_time(self, end_time):
+        if end_time.data <= self.start_time.data:
+            raise ValidationError("Invalid Time Range")
+
+class AddRoleForm(FlaskForm):
+    user_id = StringField('user_id',  validators=[DataRequired()])
+    role_name = SelectField('user_id',  validators=[DataRequired()], choices=[('', 'Select Role'), ('tutor', 'Tutor'), ('supervisor', 'Supervisor')])
+    def validate_user_id(self, user_id):
+        if Role.query.filter_by(user_id=user_id.data, name=self.role_name.data).first():
+            raise ValidationError("Existing role")
+    
+    
+    
+    
+
