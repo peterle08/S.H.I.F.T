@@ -125,8 +125,8 @@ def view_profile():
 # parameter:
 # role:
 # Description: validate users
-@app.route('/<position>/profile/validate/<email>/<redirect_to>', methods=['GET', 'POST'])
-def validate_profile(position, email, redirect_to):
+@app.route('/profile/validate/<email>/', methods=['GET', 'POST'])
+def validate_profile(email):
     form = ProfileForm()
     profile = Fetch.profile_by_email(email)
 
@@ -136,15 +136,13 @@ def validate_profile(position, email, redirect_to):
             if form.validate_on_submit():
                 Insert.profile(form)
                 profile = Fetch.profile_by_email(form.email.data)
-                if position == "student":
-                    return redirect(url_for('add_student', profile_id=profile.id, redirect_to=redirect_to))
-                elif position == "employee":
-                    return redirect(url_for('add_student', profile_id=profile.id, redirect_to=redirect_to))
+                if current_user.is_authenticated:
+                    return redirect(url_for('add_employee', profile_id=profile.id))
+                return redirect(url_for('add_student', profile_id=profile.id))
         else:
-            if position == "student":
-                return redirect(url_for('add_student', profile_id=profile.id, redirect_to=redirect_to))
-            elif position == "employee":
+            if current_user.is_authenticated:
                 return redirect(url_for('add_employee', profile_id=profile.id))
+            return redirect(url_for('add_student', profile_id=profile.id))
     return render_template('/profile/validate.html', title="Verify Profile", form=form, email=email, profile=profile)
 
 #==============================   Student       ==============================
@@ -163,11 +161,11 @@ def start_walkin(department_id):
     if form.validate_on_submit():
         profile = Fetch.profile_by_email(form.email.data)
         if profile == None:
-            return redirect(url_for('validate_profile', position="student", email=form.email.data, redirect_to="walkin"))
+            return redirect(url_for('validate_profile', email=form.email.data))
         else:
             student = Student.query.filter_by(profile_id=profile.id).first()
             if student == None:
-                return redirect(url_for('validate_profile', position="student", email=form.email.data, redirect_to="walkin"))
+                return redirect(url_for('validate_profile', email=form.email.data))
             if form.purpose.data:
                 Insert.walkin(department_id, student.id, form.purpose.data, datetime.now(), "w", None)
                 return redirect(url_for('start_walkin', department_id=department_id))
@@ -179,8 +177,8 @@ def start_walkin(department_id):
 # parameter: profile_id
 # role: any
 # Description: Add student, Add user, add role
-@app.route('/<int:profile_id>/student/add/<redirect_to>',methods=['GET', 'POST'])
-def add_student(profile_id, redirect_to):
+@app.route('/<int:profile_id>/student/add',methods=['GET', 'POST'])
+def add_student(profile_id):
     form = AddUserForm()
     departments = Department.query.all()
     student = Student.query.filter_by(profile_id=profile_id).first()
@@ -197,10 +195,8 @@ def add_student(profile_id, redirect_to):
             Insert.student(request.form.get('student_id'), department_id, profile_id)
         if Role.query.filter_by(user_id=user.id, name="student").first() == None:
             Insert.role(user.id, "student")
-        if redirect_to == "walkin":
-            return redirect(url_for('start_walkin', department_id=department_id))
-        elif redirect_to == "signup":
-            pass # redirect  login??????
+        return redirect(url_for('start_walkin', department_id=department_id))
+
     return render_template('/student/add.html', title="Add User", form=form, departments=departments, student=student, user=user)
 
 #============================== Employee  ===================================
@@ -208,24 +204,38 @@ def add_student(profile_id, redirect_to):
 # parameter:profile_id
 # role: any
 # Description: Add employee, Add user, add role
-@app.route('/<int:profile_id>/employee/add',methods=['GET', 'POST'])
+@app.route('/<profile_id>/employee/add',methods=['GET', 'POST'])
 @login_required
 def add_employee(profile_id):
+    if not current_user.is_authorized(['assistant', 'supervisor']): abort(403)
     form = AddUserForm()
-    departments = Department.query.all()
     employee = Employee.query.filter_by(profile_id=profile_id).first()
     user = Fetch.user_by_profile(profile_id)
+    courses = Course.query.all()
+    if current_user.is_authorized(['admin']):
+        departments = Department.query.all()
+    else:
+        departments = Department.query.filter_by(id=current_user.profile.employee.department_id).all()
+
     if request.method == "POST":
+        employee_id = request.form.get('employee_id')
         if user == None and form.validate_on_submit():
             password = Function.random_password()
             Insert.user(form.username.data, password, profile_id)
             user = Fetch.user_by_username(form.username.data)
         if employee == None:
-            Insert.employee(request.form.get('employee_id'), request.form.get('department_id'), request.form.get('wage'), profile_id)
+            Insert.employee(employee_id, request.form.get('department_id'), request.form.get('wage'), profile_id)
         if Role.query.filter_by(user_id=user.id, name="employee").first() == None:
             Insert.role(user.id, "employee")
-        # redirect to????
-    return render_template('/employee/add.html', title="Add User", form=form, departments=departments, employee=employee, user=user)
+        roles = request.form.getlist('role')
+        for role in roles:
+            if Role.query.filter_by(user_id=user.id, name=role).first() == None:
+                Insert.role(user.id, role)
+        tutor_courses = request.form.getlist('course_id')
+        for course in tutor_courses:
+            Insert.tutor(employee_id, course)
+        return redirect(url_for('view_employees'))
+    return render_template('/employee/add.html', title="Add User", form=form, departments=departments, employee=employee, user=user, courses=courses)
 
 
 #_________________________________

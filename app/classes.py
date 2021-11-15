@@ -199,7 +199,9 @@ class Insert:
                                 time_stamp=time_stamp, status=status, employee_id=employee_id
                         ))
         db.session.commit()
-    
+    def tutor(employee_id, course_id):
+        db.session.add(Tutor(employee_id=employee_id, course_id=course_id))
+        db.session.commit()
 class Delete:
     def appointment(date, start_time, student_id)  :
         Appointment.query.filter_by(date=date, start_time=start_time, student_id=student_id).delete()
