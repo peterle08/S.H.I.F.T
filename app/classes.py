@@ -6,7 +6,7 @@ import random
 from datetime import timedelta, date, datetime
 from time import time
 from sqlalchemy import func, and_, or_
-from app.models import Appointment, Department, Student, User, Profile, Setting, Role, Employee, Walkin, Shift, Tutor, Course
+from app.models import Appointment, Department, Student, Supervise, Supervisor, User, Profile, Setting, Role, Employee, Walkin, Shift, Tutor, Course
 from app import db
 
 class Function:
@@ -202,6 +202,13 @@ class Insert:
     def tutor(employee_id, course_id):
         db.session.add(Tutor(employee_id=employee_id, course_id=course_id))
         db.session.commit()
+    def supervisor(employee_id):
+        db.session.add(Supervisor(id=employee_id))
+        db.session.commit()
+
+    def supervise(supervisor_id, employee_id):
+        db.session.add(Supervise(supervisor_id=supervisor_id, employee_id=employee_id))
+        db.session.commit()      
 class Delete:
     def appointment(date, start_time, student_id)  :
         Appointment.query.filter_by(date=date, start_time=start_time, student_id=student_id).delete()

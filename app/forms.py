@@ -4,7 +4,7 @@ from wtforms.fields.html5 import DateField, TimeField
 
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, length, Optional
 from flask_login import current_user, login_user
-from app.models import User
+from app.models import User, Role
 from app.classes import Fetch, Function
 
 class LoginForm(FlaskForm):
@@ -127,11 +127,13 @@ class AddAppointmentForm(FlaskForm):
     def validate_end_time(self, end_time):
         if end_time.data <= self.start_time.data:
             raise ValidationError("Invalid Time Range")
-    
-    
-    
-    
-    
+
+class AddRoleForm(FlaskForm):
+    user_id = StringField('user_id',  validators=[DataRequired()])
+    role_name = SelectField('user_id',  validators=[DataRequired()], choices=[('', 'Select Role'), ('tutor', 'Tutor'), ('supervisor', 'Supervisor')])
+    def validate_user_id(self, user_id):
+        if Role.query.filter_by(user_id=user_id.data, name=self.role_name.data).first():
+            raise ValidationError("Existing role")
     
     
     
