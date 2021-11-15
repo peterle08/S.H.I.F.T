@@ -218,7 +218,6 @@ def add_employee(profile_id):
         departments = Department.query.all()
     else:
         departments = Department.query.filter_by(id=current_user.profile.employee.department_id).all()
-
     if request.method == "POST":
         employee_id = request.form.get('employee_id')
         if user == None and form.validate_on_submit():
@@ -332,13 +331,16 @@ def tutor_availability(student_id):
 @app.route('/appointments', methods=['GET', 'POST'])
 @login_required
 def appointments():
+    if not current_user.is_authorized(['supervisor', 'student']): abort(403)
     if request.method == "POST":
         Delete.appointment(request.form.get('date'), request.form.get('start_time'), request.form.get('student_id'))
 
     if current_user.is_authorized(['supervisor']):
-        appointments = Appointment.query.all()
+        appointments = Fetch.appointmentby_department(current_user.profile.employee.department_id)
     elif current_user.is_authorized(['student']):
         appointments = Appointment.query.filter_by(student_id=current_user.profile.student.id).all()
+    elif current_user.is_authorized(['admin']):
+        appointments = Appointment.query.all()
     # appointments & fc events
     appointments_dict = []
     events = []

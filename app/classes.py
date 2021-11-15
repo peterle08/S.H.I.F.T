@@ -117,7 +117,11 @@ class Fetch:
     def walkin_search(department_id, picked_date):
         return db.session.query(Walkin).filter(and_(func.date(Walkin.time_stamp)==picked_date, Walkin.department_id==department_id))\
                         .order_by(Walkin.time_stamp).all()
-
+    def appointmentby_department(department_id):
+        return db.session.query(Appointment)\
+                        .join(Employee, Appointment.employee_id==Employee.id)\
+                        .filter(Employee.department_id==department_id)\
+                        .all()
 class Insert:
     def appointment(form):
         stmt = Appointment(date=form.date.data, start_time=form.start_time.data, end_time=form.end_time.data, 
