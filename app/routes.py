@@ -8,11 +8,11 @@ from datetime import date, datetime
 
 from app.classes import Fetch, Function, Insert, Update, Delete
 
-from app.forms import LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
+from app.forms import AddRoleForm, LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
                         AddShiftForm, AddAppointmentForm
 from app.email import Email
 from app import app
-from app.models import Appointment, Course, Profile, User, Department, Student, Role, Employee, Walkin
+from app.models import Appointment, Course, Profile, Supervisor, User, Department, Student, Role, Employee, Walkin
 
 #_________________________________
 # Login-required: yes
@@ -207,11 +207,13 @@ def add_student(profile_id):
 @app.route('/<profile_id>/employee/add',methods=['GET', 'POST'])
 @login_required
 def add_employee(profile_id):
-    if not current_user.is_authorized(['assistant', 'supervisor']): abort(403)
+    if not current_user.is_authorized(['admin', 'supervisor']): abort(403)
     form = AddUserForm()
     employee = Employee.query.filter_by(profile_id=profile_id).first()
     user = Fetch.user_by_profile(profile_id)
     courses = Course.query.all()
+    supervisors = Supervisor.query.all()
+
     if current_user.is_authorized(['admin']):
         departments = Department.query.all()
     else:
@@ -227,15 +229,19 @@ def add_employee(profile_id):
             Insert.employee(employee_id, request.form.get('department_id'), request.form.get('wage'), profile_id)
         if Role.query.filter_by(user_id=user.id, name="employee").first() == None:
             Insert.role(user.id, "employee")
+            Insert.supervise(request.form.get('supervisor_id'), employee_id)
         roles = request.form.getlist('role')
         for role in roles:
             if Role.query.filter_by(user_id=user.id, name=role).first() == None:
                 Insert.role(user.id, role)
+                if role == "supervisor":
+                    Insert.supervisor(employee_id)
         tutor_courses = request.form.getlist('course_id')
         for course in tutor_courses:
             Insert.tutor(employee_id, course)
         return redirect(url_for('view_employees'))
-    return render_template('/employee/add.html', title="Add User", form=form, departments=departments, employee=employee, user=user, courses=courses)
+    return render_template('/employee/add.html', title="Add User", form=form, departments=departments, employee=employee, 
+                                        supervisors=supervisors, user=user, courses=courses)
 
 
 #_________________________________
@@ -246,13 +252,21 @@ def add_employee(profile_id):
 @app.route('/employees/view',methods=['GET', 'POST'])
 @login_required
 def view_employees():
-    form = AddShiftForm()
     if current_user.is_authorized(['admin', 'supervisor']) == False: abort(403)
-    employees = Employee.query.all()  
-    if form.validate_on_submit():
-        Insert.schedule(form)
-        return redirect(url_for('view_employees'))
-    return render_template('/employee/view.html', title="View Employees", employees=employees, form=form)
+    form = AddShiftForm()
+    role_form = AddRoleForm()
+    employees = Employee.query.all()
+    if request.method == "POST":
+        if request.form.get("action") == "shift":
+            if form.validate_on_submit():
+                Insert.schedule(form)
+                employees = Employee.query.all() 
+        else:
+            if role_form.validate_on_submit():
+                if Role.query.filter_by(user_id=role_form.user_id.data, name=role_form.user_id.data).first() == None:
+                    Insert.role(role_form.user_id.data, role_form.role_name.data)
+
+    return render_template('/employee/view.html', title="View Employees", employees=employees, form=form, role_form=role_form)
 
 
 #============================== Calendar  ===================================

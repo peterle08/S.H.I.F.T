@@ -60,7 +60,6 @@
 
 /* Modal - from bs4 */
 .modal {
-    background-color: #126360da; /* Black w/ opacity */
     background-color: #50817fa4; /* Fallback color */
 }
 
@@ -78,7 +77,6 @@
 
 /* background */
 .bg-shift-transparent{
-    background-color: #2c928f73; /* Black w/ opacity */
     background-color: #288a8657; /* Fallback color */
 }
 

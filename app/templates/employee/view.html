@@ -5,7 +5,11 @@
     <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#newEmployee">
         <span class="fa fa-plus"></span> Add Employee
     </button>
+
 </div>
+{% for error in role_form.user_id.errors %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endfor %}
 <hr>
 <div class="container">
     <table class="table">
@@ -19,7 +23,12 @@
                     <button type="button" class="btn btn-primary shiftbutton" data-toggle="modal" data-target="#addShift{{loop.index}}">
                         Add Schedule
                     </button>  
-                </td>  
+                </td>
+                <td>
+                    <button type="button" class="btn btn-info" data-toggle="modal" onclick="showRoleModal('{{employee.profile.user.id}}', '{{employee.profile.first_name}}', '{{employee.profile.last_name}}')">
+                        Add Role
+                    </button>  
+                </td>   
                 </tr>
             {% endfor %}
         </tbody>
@@ -96,6 +105,7 @@
                     </div>
                 <hr>
                     {{ form.submit(class="btn btn-outline-info", style="width:100%;")}}
+                    <input type="hidden" name="action" value="shift">
                 </div>
             </form>
         </div>
@@ -108,7 +118,7 @@
     </div>
     </div>
 </div>
-
+{% endfor %}
 <div class="modal fade" id="newEmployee">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
@@ -132,7 +142,28 @@
     </div>
 </div>
 
-{% endfor %}
+<div class="modal fade" id="newRole">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="labelRole">New Roles</h4>
+            </div>
+            <div class="modal-body">
+                <form action="" method="POST">
+                    {{ role_form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ role_form.role_name(class="form-control")}}
+                        {{ role_form.user_id(type="hidden")}}
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-outline-info w-100">Save</button>
+                    </div>
+                    <input type="hidden" name="action" value="role">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 
@@ -141,6 +172,11 @@
     function redirectTo(){
         let link = "/profile/validate/" + document.getElementById("employeeEmail").value;
         location.href = link;
+    }
+    function showRoleModal(userId, firstName, lastName){
+        $('#newRole').modal('show');
+        document.getElementById("labelRole").innerHTML = firstName + " " + lastName;
+        document.getElementById("user_id").value = userId;
     }
 </script>
 {% endblock %}

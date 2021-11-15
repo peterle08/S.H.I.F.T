@@ -3,7 +3,7 @@
 {% block head %}
     <style>
         .label{
-            width: 120px;
+            width: 150px;
         }
     </style>
 {% endblock %}
@@ -56,17 +56,44 @@
         </div>
         <div class="form-group">
             <div class="form-inline">
+                <label class="label">Supervised by : </label>
+            {% if current_user.is_authorized(['admin']) %}
+                <select name="supervisor_id" class="form-control">
+                    <option value="" selected disabled>Select Supervisor</option>
+                {% for supervisor in supervisors %}
+                    <option value="{{supervisor.employee.id}}">
+                        {{supervisor.employee.profile.first_name}} {{supervisor.employee.profile.last_name}} - Department
+                        : {{supervisor.employee.department.name}} - ({{supervisor.employee.id}})
+                    </option>
+                {% endfor %}
+                </select>
+            {% else: %}
+                <select name="supervisor_id" class="form-control">
+                    <option value="{{current_user.profile.employee.id}}">{{current_user.profile.first_name}} {{current_user.profile.last_name}} - {{current_user.profile.employee.id}}</option>
+                </select>
+            {% endif %}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-inline">
                 <label class="label">Optional Role(s): </label>
+            {% if current_user.is_authorized(['admin']) %}
+                <div class="form-check-inline">
+                    <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" name="role" value="supervisor">Supervisor
+                    </label>
+                </div>
+            {% endif %}
                 <div class="form-check-inline">
                     <label class="form-check-label">
                       <input type="checkbox" class="form-check-input" name="role" value="assistant">Assistant
                     </label>
-                  </div>
-                  <div class="form-check-inline">
+                </div>
+                <div class="form-check-inline">
                     <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" name="role" value="tutor">Tutor
+                    <input type="checkbox" class="form-check-input" name="role" value="tutor">Tutor
                     </label>
-                  </div>
+                </div>
             </div>
         </div>
         <div class="form-group">
@@ -85,7 +112,7 @@
         </div>
     {% endif %}
         <hr>
-        <button class="btn btn-outline-primary" type="submit">Submit</button>
+        <button class="btn btn-info w-100" type="submit">Submit</button>
     </form>
 </div>
 
