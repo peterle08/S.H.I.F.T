@@ -54,6 +54,11 @@ class Function:
             return False
         return True
 
+    def isWithinDuration(start_time, end_time, current_time):
+        if(current_time >= start_time and current_time <= end_time):
+            return True;
+        return False;
+
 class Update:
     def password(user, password):   # update password
         user.set_password(password)
@@ -122,6 +127,9 @@ class Fetch:
                         .join(Employee, Appointment.employee_id==Employee.id)\
                         .filter(Employee.department_id==department_id)\
                         .all()
+
+    
+    
 class Insert:
     def appointment(form):
         stmt = Appointment(date=form.date.data, start_time=form.start_time.data, end_time=form.end_time.data, 
@@ -130,6 +138,8 @@ class Insert:
         db.session.commit()
 
     def schedule(form):
+        print("infunc")
+
         s = set()
         if(form.monday_start.data is None and form.monday_end.data is None):
             s.add(0)
@@ -168,9 +178,26 @@ class Insert:
                 i = set()
                 i.add(index.weekday())
                 if(s.issuperset(i) == False):
-                    shft = Shift(employee_id = form.employee_id.data, date=index, start_time = shiftstart, end_time = shiftend)
-                    db.session.add(shft)
-                    db.session.commit()
+                    new_shift = Shift(employee_id = form.employee_id.data, date=index, start_time = shiftstart, end_time = shiftend)
+                    shifts = Shift.query.filter_by(employee_id = form.employee_id.data, date=index)
+                    add = True
+                    for shift in shifts:
+                        if(Function.isWithinDuration(shift.start_time, shift.end_time,new_shift.start_time)):
+                            add = False
+                            break
+                        elif(Function.isWithinDuration(shift.start_time, shift.end_time,new_shift.end_time)):
+                            add=False
+                            break
+                        elif(Function.isWithinDuration(new_shift.start_time, new_shift.end_time,shift.start_time)):
+                            add=False
+                            break
+                        elif(Function.isWithinDuration(new_shift.start_time, new_shift.end_time,shift.end_time)):
+                            add=False
+                            break
+                    if(add):
+                        print("we addin")
+                        db.session.add(new_shift)
+                        db.session.commit()
             index = index + timedelta(days=1) 
         
     def profile(form):
