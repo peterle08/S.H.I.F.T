@@ -1,3 +1,4 @@
+from app.token import verify_email_confirm_token
 import re
 from flask import render_template, redirect, url_for, request, json, abort
 from flask_login import current_user, logout_user, login_required
@@ -146,6 +147,45 @@ def validate_profile(email):
     return render_template('/profile/validate.html', title="Verify Profile", form=form, email=email, profile=profile)
 
 #==============================   Student       ==============================
+# Login-required: npo
+# parameter:
+# role:
+# Description: student sign-up
+@app.route('/student/verify/email',methods=['GET', 'POST'])
+def student_verify_email():
+    form = EmailForm()
+    alert = ""
+    if form.validate_on_submit():
+        if form.email.data[-8:] != "kent.edu":
+            alert = "Invalid Kent Email"
+        else:
+            Email.verify_email(form.email.data)
+            alert = "We have sent the confirmation to " + form.email.data + "!\nPlease verify your email to continue to the Next Step!"
+    return render_template('/student/signup.html', title="Student SignUp", form=form, alert=alert)
+
+@app.route('/student/signup/<email>/<token>',methods=['GET', 'POST'])
+def student_signup(email, token):
+    if not verify_email_confirm_token(token): abort(404)
+
+    form = AddUserForm()
+    profile = Fetch.profile_by_email(email)
+    departments = Department.query.all()
+    student = Student.query.filter_by(profile_id=profile.id).first()
+    user = Fetch.user_by_profile(profile.id)
+    if request.method == "POST":
+        if user == None and form.validate_on_submit():
+            password = request.form.get('password')
+            Insert.user(form.username.data, password, profile.id)
+            user = Fetch.user_by_username(form.username.data)
+            Email.new_user(form.username.data, password, profile.email, profile.first_name)
+        if student == None:
+            department_id = request.form.get('department_id')
+            Insert.student(request.form.get('student_id'), department_id, profile.id)
+        if Role.query.filter_by(user_id=user.id, name="student").first() == None:
+            Insert.role(user.id, "student")
+        return redirect(url_for('login'))
+
+    return render_template('/student/add.html', title="Add User", form=form, departments=departments, student=student, user=user)
 #_________________________________
 # Login-required: yes (student do not required to login)
 # parameter:
@@ -508,6 +548,7 @@ def view_swap_request():
     else:
         swaps = Swap.query.filter_by(requester_id=current_user.profile.employee.id).all()
     swaps = Swap.query.all() # for testing
+
     return render_template('shift/swap_request_view.html', title="Request Shift Swap", swaps=swaps)
 #============================== Walkin  ===================================
 # Login-required: yes

@@ -1,0 +1,26 @@
+{% extends "/base/public.html" %}
+
+{% block content %}
+<div class="container-sm mt-4 text-center">
+    <h4>WELCOME TO S.H.I.F.T</h4>
+    <form action="" method="POST">
+        {{form.hidden_tag()}}
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text fa fa-envelope-o text-info"></span>
+            </div>
+            {{ form.email(class="form-control", placeholder="Your Kent Email") }}
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-info w-100">Verify Email</button>
+        </div>
+        <div class="w-100">
+            {% if not alert %}
+            <span>We will send the confirmation to your Kent Email (make sure you check the spam box) </span>
+            {% else %}
+            <span class="text-danger">{{alert}}</span>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

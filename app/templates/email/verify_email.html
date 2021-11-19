@@ -1,0 +1,16 @@
+<p>
+    {% if extend_body %}
+    <h4 style="font-weight: bold;">{{extend_body}}</h4>
+    {% endif %}
+    Hi,
+    <br><br>
+    <a href="{{ url_for('student_signup', email=email, token=token, _external=True) }}">
+        Please click here to verify your Kent Email.
+    </a>
+    <br><br>
+    Sincerely,
+    <br>
+    _____________
+    <br>
+    S.H.I.F.T
+</p>
