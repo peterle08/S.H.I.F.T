@@ -96,8 +96,8 @@ class EditProfileForm(FlaskForm):
 
 
 class AddShiftForm(FlaskForm):
-    start_date = DateField('Start Date', format='%m/%d/%y', validators=[DataRequired()])
-    end_date = DateField('End Date', format='%m/%d/%y', validators=[DataRequired()])
+    start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
+    end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
     employee_id = StringField('Employee ID', validators=[DataRequired()])
 
     monday_start = TimeField('Start Time',validators=[Optional()])

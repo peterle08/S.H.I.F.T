@@ -263,6 +263,7 @@ def view_employees():
             if form.validate_on_submit():
                 Insert.schedule(form)
                 employees = Employee.query.all() 
+                return redirect(url_for('view_employees'))
         else:
             if role_form.validate_on_submit():
                 if Role.query.filter_by(user_id=role_form.user_id.data, name=role_form.user_id.data).first() == None:
