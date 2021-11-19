@@ -67,7 +67,6 @@ html {
 .modal-content {
     border: 1px solid rgb(114, 173, 168);
     border-radius: 5px;
-    width: fit-content;
 }
 
 /* Dropdown Menu - bs4 */

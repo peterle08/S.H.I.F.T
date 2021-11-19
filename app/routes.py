@@ -254,8 +254,9 @@ def view_employees():
     if current_user.is_authorized(['admin', 'supervisor']) == False: abort(403)
     form = AddShiftForm()
     role_form = AddRoleForm()
+    profile_form = EditProfileForm()
     if current_user.is_authorized(['supervisor']):
-        employees = Supervise.query.filter_by(supervisor_id=current_user.profile.employee.id).all()
+        employees = Fetch.employee_by_supervisor(current_user.profile.employee.id)
     else:
         employees = Employee.query.all()
     if request.method == "POST":
@@ -275,7 +276,7 @@ def view_employees():
                     elif role_form.role_name.data == "supervisor":
                         Insert.supervisor(employee_id)
     courses = Course.query.all()
-    return render_template('/employee/view.html', title="View Employees", employees=employees, form=form, role_form=role_form, courses=courses)
+    return render_template('/employee/view.html', title="View Employees", employees=employees, form=form, role_form=role_form, profile_form=profile_form, courses=courses)
 
 
 #============================== Calendar  ===================================
