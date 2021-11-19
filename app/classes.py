@@ -138,7 +138,7 @@ class Insert:
         db.session.commit()
 
     def schedule(form):
-        print("infunc")
+       
 
         s = set()
         if(form.monday_start.data is None and form.monday_end.data is None):
@@ -195,7 +195,7 @@ class Insert:
                             add=False
                             break
                     if(add):
-                        print("we addin")
+                        
                         db.session.add(new_shift)
                         db.session.commit()
             index = index + timedelta(days=1) 

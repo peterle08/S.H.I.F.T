@@ -251,16 +251,13 @@ def add_employee(profile_id):
 @app.route('/employees/view',methods=['GET', 'POST'])
 @login_required
 def view_employees():
-    print("on employee page")
     if current_user.is_authorized(['admin', 'supervisor']) == False: abort(403)
     form = AddShiftForm()
     role_form = AddRoleForm()
     employees = Employee.query.all()
     if request.method == "POST":
-        print("it is post")
         if request.form.get("action") == "shift":
             if form.validate_on_submit():
-                print("form is validated")
                 Insert.schedule(form)
                 employees = Employee.query.all() 
                 return redirect(url_for('view_employees'))
