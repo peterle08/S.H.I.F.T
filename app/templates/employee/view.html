@@ -12,35 +12,46 @@
 {% endfor %}
 <hr>
 <div class="container">
-    <table class="table">
-        <tbody>
+    <div class="row d-flex justify-content-center text-center">
+        <div class="group-inline">
+            <input type="text" class="form-control" id="myInput" placeholder="Search here" style="max-width: 310px;">
+            <br>
+        </div>
+    </div>
+    <table class="text-center m-auto">
+        <tbody class="table" id="myTable">
             {% for employee in employees: %}
-                <tr>
-                <td>{{employee.profile.first_name}}</td>
-                <td>{{employee.profile.last_name}}</td>
+            <tr class="border btn-outline-primary w-60 mb-3 p-1">
+                <td>{{employee.id}}</td>
+                <td>{{employee.profile.first_name}} {{employee.profile.last_name}}</td>
                 <td>{{employee.department.name}}</td>
                 <td>
-                    <button type="button" class="btn btn-primary shiftbutton" data-toggle="modal" data-target="#addShift{{loop.index}}">
-                        Add Schedule
-                    </button>  
-                </td>
-                <td>
-                    <button type="button" class="btn btn-info" data-toggle="modal" onclick="showRoleModal('{{employee.profile.user.id}}', '{{employee.id}}', '{{employee.profile.first_name}}', '{{employee.profile.last_name}}')">
-                        Add Role
-                    </button>  
-                </td>   
-                </tr>
+                    <div class="dropdown dropleft float-right">
+                        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">
+                            <span class="fa fa-bars"> </span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#addShift{{loop.index}}">
+                                Add Schedule
+                            </button>
+                            <button type="button" class="dropdown-item" data-toggle="modal" onclick="showRoleModal('{{employee.profile.user.id}}', '{{employee.id}}', '{{employee.profile.first_name}}', '{{employee.profile.last_name}}')">
+                                Add Role
+                            </button>
+                            <button type="button" class="dropdown-item" data-toggle="modal" data-toggle="modal" data-target="#employeeInfo{{loop.index}}">
+                                View Information
+                            </button>    
+                        </div>
+                      </div>
+                </td>  
+            </tr>
             {% endfor %}
         </tbody>
     </table>
-
 </div>
 
-
 {% for employee in employees: %}
-
 <div class="modal" id="addShift{{loop.index}}">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
     <div class="modal-content">
     
         <!-- Modal Header -->
@@ -116,6 +127,32 @@
         </div>
         
     </div>
+    </div>
+</div>
+<!-- emp info modals -->
+<div class="modal fade" id="employeeInfo{{loop.index}}">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{employee.profile.first_name}} {{employee.profile.last_name}}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Employee ID: {{employee.id}}</label>
+                </div>
+                <div class="form-group">
+                    <label>{{employee.profile.email}}</label>
+                </div>
+                <div class="form-group">
+                    <label>{{employee.profile.phone}}</label>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label>User ID : {{employee.profile.user.id}}</label><br>
+                    <label>Username: {{employee.profile.user.username}}</label>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endfor %}
@@ -195,5 +232,13 @@
         if (role == "tutor") 
             document.getElementById('tutorCourse').style.display = "block";
     }
+    $(document).ready(function(){
+        $("#myInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#myTable tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
 </script>
 {% endblock %}

@@ -3,10 +3,9 @@
 
 import string
 import random
-from datetime import timedelta, date, datetime
-from time import time
+from datetime import timedelta
 from sqlalchemy import func, and_, or_
-from app.models import Appointment, Department, Swap, Student, Supervise, Supervisor, Swap, User, Profile, Setting, Role, Employee, Walkin, Shift, Tutor, Course
+from app.models import Appointment, Swap, Student, Supervise, Supervisor, Swap, User, Profile, Setting, Role, Employee, Walkin, Shift, Tutor, Course
 from app import db
 
 class Function:
@@ -56,8 +55,8 @@ class Function:
 
     def isWithinDuration(start_time, end_time, current_time):
         if(current_time >= start_time and current_time <= end_time):
-            return True;
-        return False;
+            return True
+        return False
 
 class Update:
     def password(user, password):   # update password
@@ -127,11 +126,7 @@ class Fetch:
                         .join(Employee, Appointment.employee_id==Employee.id)\
                         .filter(Employee.department_id==department_id)\
                         .all()
-<<<<<<< HEAD
 
-    
-    
-=======
     def shift_by_supervisor(supervisor_id):
         return db.session.query(Shift, Profile, Employee)\
                         .join(Employee, Employee.id==Shift.employee_id)\
@@ -148,7 +143,12 @@ class Fetch:
                         .join(Role, Role.user_id==User.id)\
                         .filter(Supervise.supervisor_id==supervisor_id, Role.name==role)\
                         .all()
->>>>>>> main
+    
+    def employee_by_supervisor(supervisor_id):
+        return db.session.query(Employee)\
+                        .join(Supervise, Supervise.employee_id==Employee.id)\
+                        .filter(Supervise.supervisor_id==supervisor_id)\
+                        .group_by(Employee.id).all()
 class Insert:
     def appointment(form):
         stmt = Appointment(date=form.date.data, start_time=form.start_time.data, end_time=form.end_time.data, 
