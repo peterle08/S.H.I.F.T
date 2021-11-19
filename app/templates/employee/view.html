@@ -25,7 +25,7 @@
                     </button>  
                 </td>
                 <td>
-                    <button type="button" class="btn btn-info" data-toggle="modal" onclick="showRoleModal('{{employee.profile.user.id}}', '{{employee.profile.first_name}}', '{{employee.profile.last_name}}')">
+                    <button type="button" class="btn btn-info" data-toggle="modal" onclick="showRoleModal('{{employee.profile.user.id}}', '{{employee.id}}', '{{employee.profile.first_name}}', '{{employee.profile.last_name}}')">
                         Add Role
                     </button>  
                 </td>   
@@ -152,13 +152,24 @@
                 <form action="" method="POST">
                     {{ role_form.hidden_tag() }}
                     <div class="form-group">
-                        {{ role_form.role_name(class="form-control")}}
+                        {{ role_form.role_name(class="form-control", onchange="showInput()")}}
                         {{ role_form.user_id(type="hidden")}}
                     </div>
+                    <div class="form-group" id="tutorCourse" style="display: none;">
+                        <select name="course_id">
+                            <option value="" selected disabled>Select Course</option>
+                            <option disabled>--------</option>
+                        {% for course in courses %}
+                            <option value="{{course.id}}">{{course.name}}</option>     
+                        {% endfor %}
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <button type="submit" class="btn btn-outline-info w-100">Save</button>
                     </div>
                     <input type="hidden" name="action" value="role">
+                    <input type="hidden" name="tutor_id" id="tutor_id">
                 </form>
             </div>
         </div>
@@ -173,10 +184,16 @@
         let link = "/profile/validate/" + document.getElementById("employeeEmail").value;
         location.href = link;
     }
-    function showRoleModal(userId, firstName, lastName){
+    function showRoleModal(userId, employee_id, firstName, lastName){
         $('#newRole').modal('show');
         document.getElementById("labelRole").innerHTML = firstName + " " + lastName;
         document.getElementById("user_id").value = userId;
+        document.getElementById("tutor_id").value = employee_id;
+    }
+    function showInput() {
+        var role = document.getElementById('role_name').value;
+        if (role == "tutor") 
+            document.getElementById('tutorCourse').style.display = "block";
     }
 </script>
 {% endblock %}

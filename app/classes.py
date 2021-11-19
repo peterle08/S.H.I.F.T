@@ -6,7 +6,7 @@ import random
 from datetime import timedelta, date, datetime
 from time import time
 from sqlalchemy import func, and_, or_
-from app.models import Appointment, Department, Student, Supervise, Supervisor, User, Profile, Setting, Role, Employee, Walkin, Shift, Tutor, Course
+from app.models import Appointment, Department, Swap, Student, Supervise, Supervisor, Swap, User, Profile, Setting, Role, Employee, Walkin, Shift, Tutor, Course
 from app import db
 
 class Function:
@@ -127,9 +127,28 @@ class Fetch:
                         .join(Employee, Appointment.employee_id==Employee.id)\
                         .filter(Employee.department_id==department_id)\
                         .all()
+<<<<<<< HEAD
 
     
     
+=======
+    def shift_by_supervisor(supervisor_id):
+        return db.session.query(Shift, Profile, Employee)\
+                        .join(Employee, Employee.id==Shift.employee_id)\
+                        .join(Supervise, Supervise.employee_id==Employee.id)\
+                        .join(Profile, Profile.id==Employee.profile_id)\
+                        .filter(Supervise.supervisor_id==supervisor_id)\
+                        .all()
+    def shift_for_swap(supervisor_id,role):
+        return db.session.query(Shift, Profile, User, Employee)\
+                        .join(Employee, Employee.id==Shift.employee_id)\
+                        .join(Supervise, Supervise.employee_id==Employee.id)\
+                        .join(Profile, Profile.id==Employee.profile_id)\
+                        .join(User, User.profile_id==Profile.id)\
+                        .join(Role, Role.user_id==User.id)\
+                        .filter(Supervise.supervisor_id==supervisor_id, Role.name==role)\
+                        .all()
+>>>>>>> main
 class Insert:
     def appointment(form):
         stmt = Appointment(date=form.date.data, start_time=form.start_time.data, end_time=form.end_time.data, 
@@ -239,7 +258,13 @@ class Insert:
 
     def supervise(supervisor_id, employee_id):
         db.session.add(Supervise(supervisor_id=supervisor_id, employee_id=employee_id))
-        db.session.commit()      
+        db.session.commit()    
+    def swap_request(form):
+        db.session.add(Swap(requester_id=form.requester_id.data, accepter_id=form.accepter_id.data, 
+                                        from_date=form.from_date.data, from_time=form.from_time.data,
+                                        to_date=form.to_date.data, to_time=form.from_time.data))
+        db.session.commit()
+
 class Delete:
     def appointment(date, start_time, student_id)  :
         Appointment.query.filter_by(date=date, start_time=start_time, student_id=student_id).delete()

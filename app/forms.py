@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField, SelectField, DateField, DecimalField, IntegerField, FileField, FloatField
+from wtforms import BooleanField, PasswordField, StringField, SubmitField, TimeField, SelectField, DateField
 from wtforms.fields.html5 import DateField, TimeField
 
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, length, Optional
-from flask_login import current_user, login_user
-from app.models import User, Role
+from flask_login import login_user
+from app.models import Shift, Swap, Role
 from app.classes import Fetch, Function
 
 class LoginForm(FlaskForm):
@@ -130,11 +130,39 @@ class AddAppointmentForm(FlaskForm):
 
 class AddRoleForm(FlaskForm):
     user_id = StringField('user_id',  validators=[DataRequired()])
-    role_name = SelectField('user_id',  validators=[DataRequired()], choices=[('', 'Select Role'), ('tutor', 'Tutor'), ('supervisor', 'Supervisor')])
+    role_name = SelectField('user_id',  validators=[DataRequired()], choices=[('', 'Select Role'), ('tutor', 'Tutor'), ('assistant', 'Assistant'), ('supervisor', 'Supervisor')])
     def validate_user_id(self, user_id):
         if Role.query.filter_by(user_id=user_id.data, name=self.role_name.data).first():
             raise ValidationError("Existing role")
+
+class RequestShiftSwapForm(FlaskForm):
+    requester_id = StringField('Requester',  validators=[DataRequired()])
+    accepter_id = StringField('Accepter',)
+    from_date = DateField('From Date', validators=[DataRequired()])
+    from_time = TimeField('From Time', format='%H:%M:%S', validators=[DataRequired()])
+    to_date = DateField('Swap to Date', validators=[DataRequired()])
+    to_time = TimeField('Swap to Time', format='%H:%M:%S', validators=[DataRequired()])
+
+    def validate_requester_id(self, requester_id):
+        swap = Swap.query.filter_by(requester_id=requester_id.data, accepter_id=self.accepter_id.data, 
+                                        from_date=self.from_date.data, from_time=self.from_time.data,
+                                        to_date=self.to_date.data, to_time=self.from_time.data).first()
+        if swap:
+            raise ValidationError("Existing Swap Request")
+    # validate if the shift_to_swap is conflict with accepter schedule
+    def validate_from_date(self, from_date):
+        shifts_of_accepter = Shift.query.filter_by(employee_id=self.accepter_id.data, date=from_date.data).all()
+        for shift in shifts_of_accepter:
+            if self.from_time.data >= shift.start_time and self.from_time.data <= shift.end_time:
+                raise ValidationError("Cannot accept the request: Time conflict on " + str(from_date.data) + " at " + str(self.from_time.data))
     
+    # validate if the shift_to_swap is conflict with requester schedule
+    def validate_to_date(self, to_date):
+        shifts_of_requester = Shift.query.filter_by(employee_id=self.requester_id.data, date=to_date.data).all()
+        for shift in shifts_of_requester:
+            if self.to_time.data >= shift.start_time and self.to_time.data <= shift.end_time:
+                raise ValidationError("Cannot accept the request: Time conflict on " + str(to_date.data) + " at " + str(self.to_time.data))
+       
     
     
     
