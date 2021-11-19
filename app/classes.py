@@ -123,14 +123,14 @@ class Fetch:
                         .filter(Employee.department_id==department_id)\
                         .all()
     def shift_by_supervisor(supervisor_id):
-        return db.session.query(Shift)\
+        return db.session.query(Shift, Profile, Employee)\
                         .join(Employee, Employee.id==Shift.employee_id)\
                         .join(Supervise, Supervise.employee_id==Employee.id)\
                         .join(Profile, Profile.id==Employee.profile_id)\
                         .filter(Supervise.supervisor_id==supervisor_id)\
                         .all()
     def shift_for_swap(supervisor_id,role):
-        return db.session.query(Shift, Profile, User)\
+        return db.session.query(Shift, Profile, User, Employee)\
                         .join(Employee, Employee.id==Shift.employee_id)\
                         .join(Supervise, Supervise.employee_id==Employee.id)\
                         .join(Profile, Profile.id==Employee.profile_id)\

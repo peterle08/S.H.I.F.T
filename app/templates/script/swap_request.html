@@ -1,6 +1,5 @@
 <script>
     let viewStyle = document.getElementById("viewStyle").value;
-    let viewStyleButtons = document.getElementById("viewStyleButton").value;
     var eventList = {{ events | safe }};
     var shifts = {{ shifts | tojson }};
     document.addEventListener('DOMContentLoaded', function() {
@@ -8,12 +7,12 @@
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: viewStyle,    // style to display
             events : eventList, // get the list of events
+            navLinks: true,
             // header Tool Bar
             headerToolbar: {
-                right: 'prev,today,next',
-                center: null,
-                left: viewStyleButtons,
-            }, 
+                left: 'dayGridMonth,timeGridWeek today prev,next',
+                right: null,
+            },
             eventClick: function(info) {
                 // show the modal
                 $('#myModal').show();
@@ -34,20 +33,17 @@
                     }
                 }
                 else {
+                    // reset inputs
                     myButton.onclick = fillRequesterInfo("", "", null, null);
                     myButton.onclick = fillAccepterInfo("", "", null, null);
+                    // fill requester info
                     myButton.onclick =  function () {
                         fillRequesterInfo(shifts[id]["employeeName"], shifts[id]["employeeId"], shifts[id]["date"], shifts[id]["start"]);
                         $('#myModal').hide();
                     }
                 }
                 // show shift in formation
-                document.getElementById("labelName").innerHTML = shifts[id]["employeeName"];
-                document.getElementById("labelDate").innerHTML = shifts[id]["date"];
-                document.getElementById("labelStartTime").innerHTML = shifts[id]["start"];
-                document.getElementById("labelEndTime").innerHTML = shifts[id]["end"];
-                document.getElementById("labelEmail").innerHTML = shifts[id]["email"];
-                document.getElementById("labelPhone").innerHTML = shifts[id]["phone"];
+                showShiftInfo(id);
                 // hide modal if click outside the modal
                 document.getElementById("myModal").addEventListener("click", (event) => {
                         const myModal = document.getElementById("myModal");
@@ -61,6 +57,15 @@
         });
         calendar.render();
     });
+    // show info labels
+    function showShiftInfo(id){
+        document.getElementById("labelName").innerHTML = shifts[id]["employeeName"];
+        document.getElementById("labelDate").innerHTML = shifts[id]["date"];
+        document.getElementById("labelStartTime").innerHTML = shifts[id]["start"];
+        document.getElementById("labelEndTime").innerHTML = shifts[id]["end"];
+        document.getElementById("labelEmail").innerHTML = shifts[id]["email"];
+        document.getElementById("labelPhone").innerHTML = shifts[id]["phone"];
+    }
 
     // fill Requester's infomation
     function fillRequesterInfo(employeeName, employeeId, date, start){

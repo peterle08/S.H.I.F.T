@@ -441,9 +441,6 @@ def request_shift_swap():
     if not current_user.is_authorized(['emplpoyee', "supervisor"]): abort(403)
     form = RequestShiftSwapForm()
     shift_list = []
-    shifts =  []
-    events = []
-    index = 0
     if not current_user.is_authorized(['supervisor']):
         supervisor_id = current_user.profile.employee.supervise.supervisor_id
     else:
@@ -453,19 +450,20 @@ def request_shift_swap():
         if post_for == "search":
             # filter shift
             role =  request.form.get('role')
-            shift_list = Fetch.shift_by_department("0006")
-            # if role == "tutor":
-            #     shift_list = Fetch.shift_for_swap(supervisor_id, role)
-            # elif role == "assistant":
-            #     shift_list = Fetch.shift_for_swap(supervisor_id, role)
-            # elif role == "all":
-            #     shift_list = Fetch.shift_by_supervisor(supervisor_id)
+            if role == "tutor":
+                shift_list = Fetch.shift_for_swap(supervisor_id, role)
+            elif role == "assistant":
+                shift_list = Fetch.shift_for_swap(supervisor_id, role)
+            elif role == "all":
+                shift_list = Fetch.shift_by_supervisor(supervisor_id)
+            # shift_list = Fetch.shift_by_department("0006") # remove this line for testing purpose
         else:
             if form.validate_on_submit():
-                print("validate")
                 Insert.swap_request(form)
-    
-        
+    # save schedule
+    shifts =  []
+    events = []
+    index = 0
     for shift in shift_list:
         if (shift.Profile.preferred_name):
             employee_name = shift.Profile.preferred_name

@@ -7,63 +7,65 @@
 
 {% block content %}
 <div class="container text-center">
-    <form action="" method="POST">
-        {{form.hidden_tag()}}
-        <table class="m-auto">
-            <tbody>
-                <tr>
-                    <th>From</th>
-                    <th>To</th>
-                </tr>
-                <tr>
-                    <td id="lableRequester"></td>
-                    <td id="lableAccepter"></td>
-                </tr>
-                <tr>
-                    <td class="form-group">
-                        {{form.requester_id(class="form-control", placeholder="Employee ID")}}
-                        {{form.from_date(class="form-control")}}
-                        {{form.from_time(class="form-control")}}
-                    </td>
-                    <td class="form-group">
-                        {{form.accepter_id(class="form-control", placeholder="Employee ID")}}
-                        {{form.to_date(class="form-control")}}
-                        {{form.to_time(class="form-control")}}
-                    </td>
-                    <input type="hidden" name="action" value="swap">
-                </tr>
-                <tr>
-                    <td>
-                        {% for error in form.to_date.errors %}
-                        <span style="color: red;">{{ error }}</span><br>
-                        {% endfor %}
-                        {% for error in form.from_date.errors %}
-                        <span style="color: red;">{{ error }}</span><br>
-                        {% endfor %}
-                        {% for error in form.requester_id.errors %}
-                        <span style="color: red;">{{ error }}</span><br>
-                        {% endfor %}
-                    </td>
-                </tr>
-            </tbody>
-            <caption class="m-auto">
-                <button class="btn btn-outline-info w-100" type="submit">Request to Swap</button>
-            </caption>
-        </table>
+    <table class="m-auto">
+        <tbody>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+            </tr>
+            <tr>
+                <td id="lableRequester"></td>
+                <td id="lableAccepter"></td>
+            </tr>
+        <form action="" method="POST">
+                {{form.hidden_tag()}}
+            <tr>
+                <td class="form-group">
+                    {{form.requester_id(class="form-control", placeholder="Employee ID")}}
+                    {{form.from_date(class="form-control")}}
+                    {{form.from_time(class="form-control")}}
+                </td>
+                <td class="form-group">
+                    {{form.accepter_id(class="form-control", placeholder="Employee ID")}}
+                    {{form.to_date(class="form-control")}}
+                    {{form.to_time(class="form-control")}}
+                </td>
+                <input type="hidden" name="action" value="swap">
+            </tr>
+            <tr>
+                <td>
+                    {% for error in form.to_date.errors %}
+                    <span style="color: red;">{{ error }}</span><br>
+                    {% endfor %}
+                    {% for error in form.from_date.errors %}
+                    <span style="color: red;">{{ error }}</span><br>
+                    {% endfor %}
+                    {% for error in form.requester_id.errors %}
+                    <span style="color: red;">{{ error }}</span><br>
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+        <caption class="m-auto">
+            <button class="btn btn-info w-100" type="submit">Request to Swap</button>
+        </caption>
     </form>
+        <caption>
+            <form action="" method="POST" id="roleForm">
+                <select name="role" class="form-control" required onchange="submitForm('roleForm')">
+                    <option value="" selected disabled>Filter by</option>
+                    <option disabled>---------------</option>
+                    <option value="tutor">Tutor</option>
+                    <option value="assistant">Assistant</option>
+                    <option value="all">All</option>
+                </select>
+                <input type="hidden" name="action" value="search">
+                <input type="hidden" name="swap" id="swap" value="0">
+            </form>
+        </caption>
+    </table>
 </div>
 <div class="container">
-    <form action="" method="POST" id="roleForm">
-        <select name="role" class="form-control" required onchange="submitForm('roleForm')">
-            <option value="" selected disabled>Filter by</option>
-            <option disabled>---------------</option>
-            <option value="tutor">Tutor</option>
-            <option value="assistant">Assistant</option>
-            <option value="all">All</option>
-        </select>
-        <input type="hidden" name="action" value="search">
-        <input type="hidden" name="swap" id="swap" value="0">
-    </form>
     <div id="calendar"></div>
 </div>
 
@@ -99,16 +101,12 @@
         </div>
     </div>
     <input id="viewStyle" type="hidden" value="dayGridMonth">
-    <input id="viewStyleButton" type="hidden" value="dayGridMonth">
   </div>
   
 {% endblock %}
 
 {% block script %}
     <script>
-        function hideModal(){
-            $('#myModal').hide();
-        }
         function submitForm(id){
             document.getElementById(id).submit();
         }

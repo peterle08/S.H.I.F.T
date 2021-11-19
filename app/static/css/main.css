@@ -109,4 +109,6 @@ html {
 }
 .fc .fc-daygrid-event-harness a {
     border: solid 1px #126360da;
+    background: #3AAFA9;
+    color: #ffffff;
 }
