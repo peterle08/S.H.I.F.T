@@ -1,0 +1,117 @@
+{% extends "/base/auth.html" %}
+
+{% block head %}
+    <link href='/static/fullcalendar/fullcalendar/main.css' rel='stylesheet' />
+    <script src='/static/fullcalendar/fullcalendar/main.js'></script>
+{% endblock %}
+
+{% block content %}
+<div class="container text-center">
+    <form action="" method="POST">
+        {{form.hidden_tag()}}
+        <table class="m-auto">
+            <tbody>
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                </tr>
+                <tr>
+                    <td id="lableRequester"></td>
+                    <td id="lableAccepter"></td>
+                </tr>
+                <tr>
+                    <td class="form-group">
+                        {{form.requester_id(class="form-control", placeholder="Employee ID")}}
+                        {{form.from_date(class="form-control")}}
+                        {{form.from_time(class="form-control")}}
+                    </td>
+                    <td class="form-group">
+                        {{form.accepter_id(class="form-control", placeholder="Employee ID")}}
+                        {{form.to_date(class="form-control")}}
+                        {{form.to_time(class="form-control")}}
+                    </td>
+                    <input type="hidden" name="action" value="swap">
+                </tr>
+                <tr>
+                    <td>
+                        {% for error in form.to_date.errors %}
+                        <span style="color: red;">{{ error }}</span><br>
+                        {% endfor %}
+                        {% for error in form.from_date.errors %}
+                        <span style="color: red;">{{ error }}</span><br>
+                        {% endfor %}
+                        {% for error in form.requester_id.errors %}
+                        <span style="color: red;">{{ error }}</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </tbody>
+            <caption class="m-auto">
+                <button class="btn btn-outline-info w-100" type="submit">Request to Swap</button>
+            </caption>
+        </table>
+    </form>
+</div>
+<div class="container">
+    <form action="" method="POST" id="roleForm">
+        <select name="role" class="form-control" required onchange="submitForm('roleForm')">
+            <option value="" selected disabled>Filter by</option>
+            <option disabled>---------------</option>
+            <option value="tutor">Tutor</option>
+            <option value="assistant">Assistant</option>
+            <option value="all">All</option>
+        </select>
+        <input type="hidden" name="action" value="search">
+        <input type="hidden" name="swap" id="swap" value="0">
+    </form>
+    <div id="calendar"></div>
+</div>
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="labelName">Employee Name</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="custom-control-inline">
+                        <label class="control-label col-sm-5">Date</label>
+                        <span id="labelDate"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="custom-control-inline">
+                        <span  class="control-label">from: </span>
+                        <span id="labelStartTime"></span> to <span id="labelEndTime"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div>Contact: </div>
+                    <span id="labelPhone"></span><br>
+                    <span id="labelEmail"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="selectShiftButton" class="btn btn-outline-info w-100">Select</button>
+            </div>
+        </div>
+    </div>
+    <input id="viewStyle" type="hidden" value="dayGridMonth">
+    <input id="viewStyleButton" type="hidden" value="dayGridMonth">
+  </div>
+  
+{% endblock %}
+
+{% block script %}
+    <script>
+        function hideModal(){
+            $('#myModal').hide();
+        }
+        function submitForm(id){
+            document.getElementById(id).submit();
+        }
+    </script>
+    {% include '/script/swap_request.html' %}
+{% endblock %}

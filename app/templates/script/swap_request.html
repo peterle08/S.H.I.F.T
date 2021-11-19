@@ -1,0 +1,81 @@
+<script>
+    let viewStyle = document.getElementById("viewStyle").value;
+    let viewStyleButtons = document.getElementById("viewStyleButton").value;
+    var eventList = {{ events | safe }};
+    var shifts = {{ shifts | tojson }};
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: viewStyle,    // style to display
+            events : eventList, // get the list of events
+            // header Tool Bar
+            headerToolbar: {
+                right: 'prev,today,next',
+                center: null,
+                left: viewStyleButtons,
+            }, 
+            eventClick: function(info) {
+                // show the modal
+                $('#myModal').show();
+                let id = info.event.id;     // get event id
+                let swap = document.getElementById("swap").value;
+                // fill swap info
+                let myButton = document.getElementById("selectShiftButton");
+                if (swap == "0") {
+                    myButton.onclick =  function () {
+                        fillRequesterInfo(shifts[id]["employeeName"], shifts[id]["employeeId"], shifts[id]["date"], shifts[id]["start"]);
+                        $('#myModal').hide();
+                    }
+                }
+                else if (swap == "1") {
+                    myButton.onclick = function() {
+                        fillAccepterInfo(shifts[id]["employeeName"], shifts[id]["employeeId"], shifts[id]["date"], shifts[id]["start"]);
+                        $('#myModal').hide();
+                    }
+                }
+                else {
+                    myButton.onclick = fillRequesterInfo("", "", null, null);
+                    myButton.onclick = fillAccepterInfo("", "", null, null);
+                    myButton.onclick =  function () {
+                        fillRequesterInfo(shifts[id]["employeeName"], shifts[id]["employeeId"], shifts[id]["date"], shifts[id]["start"]);
+                        $('#myModal').hide();
+                    }
+                }
+                // show shift in formation
+                document.getElementById("labelName").innerHTML = shifts[id]["employeeName"];
+                document.getElementById("labelDate").innerHTML = shifts[id]["date"];
+                document.getElementById("labelStartTime").innerHTML = shifts[id]["start"];
+                document.getElementById("labelEndTime").innerHTML = shifts[id]["end"];
+                document.getElementById("labelEmail").innerHTML = shifts[id]["email"];
+                document.getElementById("labelPhone").innerHTML = shifts[id]["phone"];
+                // hide modal if click outside the modal
+                document.getElementById("myModal").addEventListener("click", (event) => {
+                        const myModal = document.getElementById("myModal");
+                        let eventTarget = event.target;
+                        if(eventTarget == myModal) {
+                            $('#myModal').hide();
+                        }
+                    },
+                );
+            },
+        });
+        calendar.render();
+    });
+
+    // fill Requester's infomation
+    function fillRequesterInfo(employeeName, employeeId, date, start){
+        document.getElementById("requester_id").value = employeeId;
+        document.getElementById("from_date").value = date;
+        document.getElementById("from_time").value = start;
+        document.getElementById("lableRequester").innerHTML = employeeName;
+        document.getElementById("swap").value = "1";
+    };
+    // fill Accepter's information
+    function fillAccepterInfo(employeeName, employeeId, date, start){
+        document.getElementById("accepter_id").value = employeeId;
+        document.getElementById("to_date").value = date;
+        document.getElementById("to_time").value = start;
+        document.getElementById("lableAccepter").innerHTML = employeeName;
+        document.getElementById("swap").value = "2";
+    };
+</script>

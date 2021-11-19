@@ -8,11 +8,11 @@ from datetime import date, datetime
 
 from app.classes import Fetch, Function, Insert, Update, Delete
 
-from app.forms import AddRoleForm, LoginForm, ProfileForm, AddUserForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
+from app.forms import AddRoleForm, LoginForm, ProfileForm, AddUserForm, RequestShiftSwapForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
                         AddShiftForm, AddAppointmentForm
 from app.email import Email
 from app import app
-from app.models import Appointment, Course, Profile, Supervisor, User, Department, Student, Role, Employee, Walkin
+from app.models import Appointment, Course, Profile, Supervise, Supervisor, Swap, User, Department, Student, Role, Employee, Walkin
 
 #_________________________________
 # Login-required: yes
@@ -254,7 +254,10 @@ def view_employees():
     if current_user.is_authorized(['admin', 'supervisor']) == False: abort(403)
     form = AddShiftForm()
     role_form = AddRoleForm()
-    employees = Employee.query.all()
+    if current_user.is_authorized(['supervisor']):
+        employees = Supervise.query.filter_by(supervisor_id=current_user.profile.employee.id).all()
+    else:
+        employees = Employee.query.all()
     if request.method == "POST":
         if request.form.get("action") == "shift":
             if form.validate_on_submit():
@@ -263,9 +266,15 @@ def view_employees():
         else:
             if role_form.validate_on_submit():
                 if Role.query.filter_by(user_id=role_form.user_id.data, name=role_form.user_id.data).first() == None:
+                    course_id = request.form.get("course_id")
+                    employee_id = request.form.get("tutor_id")
                     Insert.role(role_form.user_id.data, role_form.role_name.data)
-
-    return render_template('/employee/view.html', title="View Employees", employees=employees, form=form, role_form=role_form)
+                    if role_form.role_name.data == "tutor":
+                        Insert.tutor(employee_id, course_id)
+                    elif role_form.role_name.data == "supervisor":
+                        Insert.supervisor(employee_id)
+    courses = Course.query.all()
+    return render_template('/employee/view.html', title="View Employees", employees=employees, form=form, role_form=role_form, courses=courses)
 
 
 #============================== Calendar  ===================================
@@ -420,6 +429,73 @@ def shift_personal():
     shifts =  []
     events = []
     return render_template('shift/personal.html', title="My Shift", events=events, shifts=shifts)
+
+#_________________________________
+# Login-required: yes
+# parameter:
+# Description: request a shift swap
+@app.route('/shift/swap/request', methods=['GET', 'POST'])
+@login_required
+def request_shift_swap():
+    print(Swap.query.all())
+    if not current_user.is_authorized(['emplpoyee', "supervisor"]): abort(403)
+    form = RequestShiftSwapForm()
+    shift_list = []
+    shifts =  []
+    events = []
+    index = 0
+    if not current_user.is_authorized(['supervisor']):
+        supervisor_id = current_user.profile.employee.supervise.supervisor_id
+    else:
+        supervisor_id = current_user.profile.employee.id
+    if request.method == "POST":
+        post_for  = request.form.get('action')
+        if post_for == "search":
+            # filter shift
+            role =  request.form.get('role')
+            shift_list = Fetch.shift_by_department("0006")
+            # if role == "tutor":
+            #     shift_list = Fetch.shift_for_swap(supervisor_id, role)
+            # elif role == "assistant":
+            #     shift_list = Fetch.shift_for_swap(supervisor_id, role)
+            # elif role == "all":
+            #     shift_list = Fetch.shift_by_supervisor(supervisor_id)
+        else:
+            if form.validate_on_submit():
+                print("validate")
+                Insert.swap_request(form)
+    
+        
+    for shift in shift_list:
+        if (shift.Profile.preferred_name):
+            employee_name = shift.Profile.preferred_name
+        else: 
+            employee_name = shift.Profile.first_name + shift.Profile.last_name
+        events.append(
+            {
+                'id' : str(index),
+                'title' : employee_name,
+                'start' : str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
+                'end' :  str(datetime.combine(shift.Shift.date, shift.Shift.end_time)),
+            }
+        )
+        # save shift to array of map 
+        shifts.append(
+            {
+                "employeeId": shift.Employee.id,
+                "employeeName":  employee_name,
+                "date": str(shift.Shift.date),
+                "start": str(shift.Shift.start_time),
+                "end": str(shift.Shift.end_time),
+                "status": shift.Shift.status,
+                "email": shift.Profile.email,
+                "phone": shift.Profile.phone,
+            }
+        )
+        index += 1 # increase event_id
+
+    return render_template('shift/swap_request.html', title="Request Shift Swap", form=form, events=events, shifts=shifts)
+
 
 #============================== Walkin  ===================================
 # Login-required: yes
