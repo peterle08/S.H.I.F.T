@@ -149,6 +149,12 @@ class Fetch:
                         .join(Supervise, Supervise.employee_id==Employee.id)\
                         .filter(Supervise.supervisor_id==supervisor_id)\
                         .group_by(Employee.id).all()
+    def swap_request_by_supervisor(supervisor_id):
+        return db.session.query(Swap)\
+                        .join(Employee, Swap.requester_id==Employee.id)\
+                        .join(Supervise, Supervise.employee_id==Employee.id)\
+                        .filter(Supervise.supervisor_id==supervisor_id)\
+                        .order_by(Swap.from_date).all()   
 class Insert:
     def appointment(form):
         stmt = Appointment(date=form.date.data, start_time=form.start_time.data, end_time=form.end_time.data, 
@@ -262,7 +268,7 @@ class Insert:
     def swap_request(form):
         db.session.add(Swap(requester_id=form.requester_id.data, accepter_id=form.accepter_id.data, 
                                         from_date=form.from_date.data, from_time=form.from_time.data,
-                                        to_date=form.to_date.data, to_time=form.from_time.data))
+                                        to_date=form.to_date.data, to_time=form.from_time.data, status="pending"))
         db.session.commit()
 
 class Delete:

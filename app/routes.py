@@ -439,7 +439,6 @@ def shift_personal():
 @app.route('/shift/swap/request', methods=['GET', 'POST'])
 @login_required
 def request_shift_swap():
-    print(Swap.query.all())
     if not current_user.is_authorized(['emplpoyee', "supervisor"]): abort(403)
     form = RequestShiftSwapForm()
     shift_list = []
@@ -496,7 +495,20 @@ def request_shift_swap():
 
     return render_template('shift/swap_request.html', title="Request Shift Swap", form=form, events=events, shifts=shifts)
 
-
+#_________________________________
+# Login-required: yes
+# parameter:
+# Description: request a shift swap
+@app.route('/shift/swap/view', methods=['GET', 'POST'])
+@login_required
+def view_swap_request():
+    # if not current_user.is_authorized(['emplpoyee']): abort(403)
+    if current_user.is_authorized(['supervisor']):
+        swaps = Fetch.swap_request_by_supervisor(current_user.profile.employee.id)
+    else:
+        swaps = Swap.query.filter_by(requester_id=current_user.profile.employee.id).all()
+    swaps = Swap.query.all() # for testing
+    return render_template('shift/swap_request_view.html', title="Request Shift Swap", swaps=swaps)
 #============================== Walkin  ===================================
 # Login-required: yes
 # Role: assistant & supervisor
