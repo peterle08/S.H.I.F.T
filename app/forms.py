@@ -53,6 +53,16 @@ class AddUserForm(FlaskForm):
         if user:
             raise ValidationError('Existing username')
 
+class NewUserForm(FlaskForm):
+    # need modified
+    username = StringField('Username', validators=[DataRequired()], render_kw={'autofocus': True})
+    password = PasswordField('Password', validators=[DataRequired(), length(min=10)])
+    confirm_password =  PasswordField('Password', validators=[DataRequired(), length(min=10), EqualTo('password')])
+    def validate_username(self, username):
+        user = Fetch.user_by_username(username.data)
+        if user:
+            raise ValidationError('Existing username')
+
 class WalkinForm(FlaskForm):
     # need modified
     email = StringField('Username', validators=[DataRequired(), Email()], render_kw={'autofocus': True})

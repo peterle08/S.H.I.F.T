@@ -9,7 +9,7 @@ from datetime import date, datetime
 
 from app.classes import Fetch, Function, Insert, Update, Delete
 
-from app.forms import AddRoleForm, LoginForm, ProfileForm, AddUserForm, RequestShiftSwapForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
+from app.forms import AddRoleForm, LoginForm, NewUserForm, ProfileForm, AddUserForm, RequestShiftSwapForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
                         AddShiftForm, AddAppointmentForm
 from app.email import Email
 from app import app
@@ -167,25 +167,33 @@ def student_verify_email():
 def student_signup(email, token):
     if not verify_email_confirm_token(token): abort(404)
 
-    form = AddUserForm()
-    profile = Fetch.profile_by_email(email)
+    form = NewUserForm()
+    profile_form = ProfileForm()
+
+    student = None
+    user = None
     departments = Department.query.all()
-    student = Student.query.filter_by(profile_id=profile.id).first()
-    user = Fetch.user_by_profile(profile.id)
+    profile = Fetch.profile_by_email(email)
     if request.method == "POST":
+        if profile == None and profile_form.validate_on_submit():
+            Insert.profile(profile_form)
+            profile = Fetch.profile_by_email(profile_form.email.data)
         if user == None and form.validate_on_submit():
-            password = request.form.get('password')
-            Insert.user(form.username.data, password, profile.id)
+            Insert.user(form.username.data, form.password.data, profile.id)
             user = Fetch.user_by_username(form.username.data)
-            Email.new_user(form.username.data, password, profile.email, profile.first_name)
+            Email.new_user(form.username.data, form.password.data, profile.email, profile.first_name)
         if student == None:
             department_id = request.form.get('department_id')
             Insert.student(request.form.get('student_id'), department_id, profile.id)
-        if Role.query.filter_by(user_id=user.id, name="student").first() == None:
-            Insert.role(user.id, "student")
-        return redirect(url_for('login'))
+            if Role.query.filter_by(user_id=user.id, name="student").first() == None:
+                Insert.role(user.id, "student")
+            return redirect(url_for('login'))
 
-    return render_template('/student/add.html', title="Add User", form=form, departments=departments, student=student, user=user)
+    if profile:
+        student = Student.query.filter_by(profile_id=profile.id).first()
+        user = Fetch.user_by_profile(profile.id)
+    return render_template('/student/new.html', title="Student Signup", email=email, form=form, profile_form=profile_form,
+                                     departments=departments, student=student, user=user)
 #_________________________________
 # Login-required: yes (student do not required to login)
 # parameter:
