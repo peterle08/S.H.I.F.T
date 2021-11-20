@@ -566,7 +566,11 @@ def view_swap_request():
             Update.swap_status(swaps[index], "accepted")
             Email.swap_request_status("Accepted by the Employee and is Waiting for Supervisor's Approval")
         elif for_action == "approve":
+            # swap shift
+            Function.swap_shift(swaps[index])
+            # update swap request
             Update.swap_status(swaps[index], "approved")
+            # email new update on swap request 
             Email.swap_request_status( swaps[index].employee.profile.email, "Approved by Supervisor")
             email = Employee.query.filter_by(id=swaps[index].accepter_id).first().profile.email
             Email.swap_request_status(email, "Approved by Supervisor")

@@ -58,6 +58,13 @@ class Function:
             return True
         return False
 
+    def swap_shift(swap):
+        requester_shift = Shift.query.filter_by(employee_id=swap.requester_id, date=swap.from_date, start_time=swap.from_time).first()
+        accepter_shift = Shift.query.filter_by(employee_id=swap.accepter, date=swap.to_date, start_time=swap.to_time).first()
+        requester_shift.employee_id = swap.accepter_id
+        accepter_shift.employee_id = swap.requester_id
+        db.session.commit()
+
 class Update:
     def password(user, password):   # update password
         user.set_password(password)
@@ -83,6 +90,7 @@ class Update:
     def swap_status(swap, status):
         swap.status = status
         db.session.commit()
+
 class Fetch:
     def user_by_id(user_id):
         return User.query.filter_by(id=user_id).first()
