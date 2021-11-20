@@ -200,7 +200,6 @@ def student_signup(email, token):
 # role:
 # Description: if existing student -> checkin, else: redirect to validate profile
 @app.route('/<department_id>/walkin/start',methods=['GET', 'POST'])
-@login_required
 def start_walkin(department_id):
     form = WalkinForm()
     student = None
@@ -556,7 +555,7 @@ def request_shift_swap():
 @app.route('/shift/swap/view', methods=['GET', 'POST'])
 @login_required
 def view_swap_request():
-    if not current_user.is_authorized(['emplpoyee']): abort(403)
+    if not current_user.is_authorized(['employee']): abort(403)
     swaps = None
     # swaps = Swap.query.all() # for testing
     if request.method == "POST":
