@@ -1,5 +1,5 @@
 from app.token import verify_email_confirm_token
-import re
+
 from flask import render_template, redirect, url_for, request, json, abort
 from flask_login import current_user, logout_user, login_required
 
@@ -508,7 +508,13 @@ def request_shift_swap():
             # shift_list = Fetch.shift_by_department("0006") # remove this line for testing purpose
         else:
             if form.validate_on_submit():
+                supervisor = Employee.query.filter_by(id=supervisor_id).first()
                 Insert.swap_request(form)
+                Email.swap_request_to_supervisor(supervisor.profile.email)
+                if form.accepter_id.data:
+                    accepter = Employee.query.filter_by(id=form.accepter_id.data).first()
+                    Email.swap_request_to_accepter(accepter.profile.email)
+
     # save schedule
     shifts =  []
     events = []
@@ -550,14 +556,29 @@ def request_shift_swap():
 @app.route('/shift/swap/view', methods=['GET', 'POST'])
 @login_required
 def view_swap_request():
-    # if not current_user.is_authorized(['emplpoyee']): abort(403)
+    if not current_user.is_authorized(['emplpoyee']): abort(403)
+    swaps = None
+    # swaps = Swap.query.all() # for testing
+    if request.method == "POST":
+        for_action = request.form.get('action')
+        index = int(request.form.get('index'))
+        if for_action == "accept":
+            Update.swap_status(swaps[index], "accepted")
+            Email.swap_request_status("Accepted by the Employee and is Waiting for Supervisor's Approval")
+        elif for_action == "approve":
+            Update.swap_status(swaps[index], "approved")
+            Email.swap_request_status( swaps[index].employee.profile.email, "Approved by Supervisor")
+            email = Employee.query.filter_by(id=swaps[index].accepter_id).first().profile.email
+            Email.swap_request_status(email, "Approved by Supervisor")
+        elif for_action == "deny":
+            Update.swap_status(swaps[index], "approved")
+            Email.swap_request_status("Denied")
     if current_user.is_authorized(['supervisor']):
         swaps = Fetch.swap_request_by_supervisor(current_user.profile.employee.id)
     else:
-        swaps = Swap.query.filter_by(requester_id=current_user.profile.employee.id).all()
-    swaps = Swap.query.all() # for testing
-
-    return render_template('shift/swap_request_view.html', title="Request Shift Swap", swaps=swaps)
+        swaps = Swap.query.filter_by(requester_id=current_user.profile.employee.id, status="pending").all()
+    my_swaps = Swap.query.filter_by(accepter_id=current_user.profile.employee.id).all()
+    return render_template('shift/swap_request_view.html', title="Request Shift Swap", swaps=swaps, my_swaps=my_swaps)
 #============================== Walkin  ===================================
 # Login-required: yes
 # Role: assistant & supervisor

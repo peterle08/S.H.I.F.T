@@ -147,7 +147,7 @@ class AddRoleForm(FlaskForm):
 
 class RequestShiftSwapForm(FlaskForm):
     requester_id = StringField('Requester',  validators=[DataRequired()])
-    accepter_id = StringField('Accepter',)
+    accepter_id = StringField('Accepter', validators=[DataRequired()])
     from_date = DateField('From Date', validators=[DataRequired()])
     from_time = TimeField('From Time', format='%H:%M:%S', validators=[DataRequired()])
     to_date = DateField('Swap to Date', validators=[DataRequired()])

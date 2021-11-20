@@ -79,6 +79,10 @@ class Update:
     def walkin_status(walkin, status):
         walkin.status = status
         db.session.commit()
+
+    def swap_status(swap, status):
+        swap.status = status
+        db.session.commit()
 class Fetch:
     def user_by_id(user_id):
         return User.query.filter_by(id=user_id).first()
@@ -153,8 +157,9 @@ class Fetch:
         return db.session.query(Swap)\
                         .join(Employee, Swap.requester_id==Employee.id)\
                         .join(Supervise, Supervise.employee_id==Employee.id)\
-                        .filter(Supervise.supervisor_id==supervisor_id)\
-                        .order_by(Swap.from_date).all()   
+                        .filter(Supervise.supervisor_id==supervisor_id, or_(Swap.status=="pending", Swap.status=="accepted"))\
+                        .order_by(Swap.from_date).all()  
+
 class Insert:
     def appointment(form):
         stmt = Appointment(date=form.date.data, start_time=form.start_time.data, end_time=form.end_time.data, 
