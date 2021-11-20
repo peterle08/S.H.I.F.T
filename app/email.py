@@ -68,7 +68,7 @@ class Email:
                 sender = "support@vnsboard.com",
                 recipients=[email]
             )
-        msg.html = render_template('email/swap_request.html')
+        msg.html = render_template('email/swap_approval.html')
         try:
             mail.send(msg)
         except:
