@@ -1,4 +1,5 @@
-import re
+from app.token import verify_email_confirm_token
+
 from flask import render_template, redirect, url_for, request, json, abort
 from flask_login import current_user, logout_user, login_required
 
@@ -8,7 +9,7 @@ from datetime import date, datetime
 
 from app.classes import Fetch, Function, Insert, Update, Delete
 
-from app.forms import AddRoleForm, LoginForm, ProfileForm, AddUserForm, RequestShiftSwapForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
+from app.forms import AddRoleForm, LoginForm, NewUserForm, ProfileForm, AddUserForm, RequestShiftSwapForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
                         AddShiftForm, AddAppointmentForm
 from app.email import Email
 from app import app
@@ -146,6 +147,53 @@ def validate_profile(email):
     return render_template('/profile/validate.html', title="Verify Profile", form=form, email=email, profile=profile)
 
 #==============================   Student       ==============================
+# Login-required: npo
+# parameter:
+# role:
+# Description: student sign-up
+@app.route('/student/verify/email',methods=['GET', 'POST'])
+def student_verify_email():
+    form = EmailForm()
+    alert = ""
+    if form.validate_on_submit():
+        if form.email.data[-8:] != "kent.edu":
+            alert = "Invalid Kent Email"
+        else:
+            Email.verify_email(form.email.data)
+            alert = "We have sent the confirmation to " + form.email.data + "!\nPlease verify your email to continue to the Next Step!"
+    return render_template('/student/signup.html', title="Student SignUp", form=form, alert=alert)
+
+@app.route('/student/signup/<email>/<token>',methods=['GET', 'POST'])
+def student_signup(email, token):
+    if not verify_email_confirm_token(token): abort(404)
+
+    form = NewUserForm()
+    profile_form = ProfileForm()
+
+    student = None
+    user = None
+    departments = Department.query.all()
+    profile = Fetch.profile_by_email(email)
+    if request.method == "POST":
+        if profile == None and profile_form.validate_on_submit():
+            Insert.profile(profile_form)
+            profile = Fetch.profile_by_email(profile_form.email.data)
+        if user == None and form.validate_on_submit():
+            Insert.user(form.username.data, form.password.data, profile.id)
+            user = Fetch.user_by_username(form.username.data)
+            Email.new_user(form.username.data, form.password.data, profile.email, profile.first_name)
+        if student == None:
+            department_id = request.form.get('department_id')
+            Insert.student(request.form.get('student_id'), department_id, profile.id)
+            if Role.query.filter_by(user_id=user.id, name="student").first() == None:
+                Insert.role(user.id, "student")
+            return redirect(url_for('login'))
+
+    if profile:
+        student = Student.query.filter_by(profile_id=profile.id).first()
+        user = Fetch.user_by_profile(profile.id)
+    return render_template('/student/new.html', title="Student Signup", email=email, form=form, profile_form=profile_form,
+                                     departments=departments, student=student, user=user)
 #_________________________________
 # Login-required: yes (student do not required to login)
 # parameter:
@@ -439,7 +487,6 @@ def shift_personal():
 @app.route('/shift/swap/request', methods=['GET', 'POST'])
 @login_required
 def request_shift_swap():
-    print(Swap.query.all())
     if not current_user.is_authorized(['emplpoyee', "supervisor"]): abort(403)
     form = RequestShiftSwapForm()
     shift_list = []
@@ -461,7 +508,13 @@ def request_shift_swap():
             # shift_list = Fetch.shift_by_department("0006") # remove this line for testing purpose
         else:
             if form.validate_on_submit():
+                supervisor = Employee.query.filter_by(id=supervisor_id).first()
                 Insert.swap_request(form)
+                Email.swap_request_to_supervisor(supervisor.profile.email)
+                if form.accepter_id.data:
+                    accepter = Employee.query.filter_by(id=form.accepter_id.data).first()
+                    Email.swap_request_to_accepter(accepter.profile.email)
+
     # save schedule
     shifts =  []
     events = []
@@ -496,7 +549,36 @@ def request_shift_swap():
 
     return render_template('shift/swap_request.html', title="Request Shift Swap", form=form, events=events, shifts=shifts)
 
-
+#_________________________________
+# Login-required: yes
+# parameter:
+# Description: request a shift swap
+@app.route('/shift/swap/view', methods=['GET', 'POST'])
+@login_required
+def view_swap_request():
+    if not current_user.is_authorized(['emplpoyee']): abort(403)
+    swaps = None
+    # swaps = Swap.query.all() # for testing
+    if request.method == "POST":
+        for_action = request.form.get('action')
+        index = int(request.form.get('index'))
+        if for_action == "accept":
+            Update.swap_status(swaps[index], "accepted")
+            Email.swap_request_status("Accepted by the Employee and is Waiting for Supervisor's Approval")
+        elif for_action == "approve":
+            Update.swap_status(swaps[index], "approved")
+            Email.swap_request_status( swaps[index].employee.profile.email, "Approved by Supervisor")
+            email = Employee.query.filter_by(id=swaps[index].accepter_id).first().profile.email
+            Email.swap_request_status(email, "Approved by Supervisor")
+        elif for_action == "deny":
+            Update.swap_status(swaps[index], "approved")
+            Email.swap_request_status("Denied")
+    if current_user.is_authorized(['supervisor']):
+        swaps = Fetch.swap_request_by_supervisor(current_user.profile.employee.id)
+    else:
+        swaps = Swap.query.filter_by(requester_id=current_user.profile.employee.id, status="pending").all()
+    my_swaps = Swap.query.filter_by(accepter_id=current_user.profile.employee.id).all()
+    return render_template('shift/swap_request_view.html', title="Request Shift Swap", swaps=swaps, my_swaps=my_swaps)
 #============================== Walkin  ===================================
 # Login-required: yes
 # Role: assistant & supervisor
