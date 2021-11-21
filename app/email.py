@@ -19,17 +19,13 @@ class Email:
                 mail.send(msg)
             except: 
                 pass
-    def new_user(username, email):
-        profile = Fetch.profile_by_email(email)
-        user = user = Fetch.user_by_profile(profile.id) # expired in 5 hours
-        extend_body = "Welcome To S.H.I.F.T\n"
-        if profile:
-            msg = Message(  subject='WELCOME TO S.H.I.F.T',
-                            sender = "support@vnsboard.com",
-                            recipients=[email]
-                        )
-            msg.html = render_template('email/password_reset.html', username=username, token=user.get_user_token(256000), extend_body=extend_body)
-            mail.send(msg)
+    def new_user(username, password, email):
+        msg = Message(  subject='WELCOME TO S.H.I.F.T',
+                        sender = "support@vnsboard.com",
+                        recipients=[email]
+                    )
+        msg.html = render_template('email/password_reset.html', username=username, password=password)
+        mail.send(msg)
 
     def verify_email(email):
         extend_body = "S.H.I.F.T - VERIFY YOUR EMAIL"
