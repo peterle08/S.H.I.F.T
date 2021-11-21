@@ -1,3 +1,11 @@
 <div class = "footer">
-    <div>S.H.I.F.T. © Kent State University 2021</div>
+    <div>S.H.I.F.T. © Kent State University <span id="copyrightYear"></span></div>
+    {% if current_user.is_anonymous %}
+    <div>Designed & Developed by</div>
+    <div>Chase Beetler, Cieara Pfeifer, Hoang Le, Jayden Stearns, Kevin Jarrells, Vanessa Sanders</div>
+    {% endif %}
 </div>
+<script>
+    let copyrightDate = new Date();
+    document.getElementById("copyrightYear").innerHTML = copyrightDate.getFullYear();
+</script>
