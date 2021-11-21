@@ -1,0 +1,18 @@
+<p>
+    <h4 style="font-weight: bold;">WELCOME TO S.H.I.F.T - KSU</h4>
+    <br><br>
+    Dear {{ username }},<br><br>
+    Your temporary password is {{password}}. <br>
+    Please remember to change your password or 
+    <a href="{{ url_for('request_password_reset') }}">
+        reset your password here.
+    </a>
+    <br><br>
+    If you have any question, Please contact the admin.
+    <br><br>
+    Sincerely,
+    <br>
+    _____________
+    <br>
+    S.H.I.F.T
+</p>

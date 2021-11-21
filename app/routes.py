@@ -181,7 +181,7 @@ def student_signup(email, token):
         if user == None and form.validate_on_submit():
             Insert.user(form.username.data, form.password.data, profile.id)
             user = Fetch.user_by_username(form.username.data)
-            Email.new_user(form.username.data, form.password.data, profile.email, profile.first_name)
+            Email.new_user(form.username.data, form.password.data, profile.email)
         if student == None:
             department_id = request.form.get('department_id')
             Insert.student(request.form.get('student_id'), department_id, profile.id)
@@ -236,7 +236,7 @@ def add_student(profile_id):
             password = Function.random_password()
             Insert.user(form.username.data, password, profile_id)
             user = Fetch.user_by_username(form.username.data)
-            Email.new_user(form.username.data, password, profile.email, profile.first_name)
+            Email.new_user(form.username.data, password, profile.email)
         if student == None:
             department_id = request.form.get('department_id')
             Insert.student(request.form.get('student_id'), department_id, profile_id)
@@ -271,6 +271,7 @@ def add_employee(profile_id):
             password = Function.random_password()
             Insert.user(form.username.data, password, profile_id)
             user = Fetch.user_by_username(form.username.data)
+            Email.new_user(user.username, password, user.profile.email)
         if employee == None:
             Insert.employee(employee_id, request.form.get('department_id'), request.form.get('wage'), profile_id)
         if Role.query.filter_by(user_id=user.id, name="employee").first() == None:
