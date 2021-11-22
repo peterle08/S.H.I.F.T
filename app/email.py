@@ -24,7 +24,7 @@ class Email:
                         sender = "support@vnsboard.com",
                         recipients=[email]
                     )
-        msg.html = render_template('email/password_reset.html', username=username, password=password)
+        msg.html = render_template('email/new_account.html', username=username, password=password)
         mail.send(msg)
 
     def verify_email(email):
