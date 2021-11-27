@@ -9,16 +9,14 @@ class Email:
     def password_reset(email):
         profile = Fetch.profile_by_email(email)
         user = Fetch.user_by_profile(profile.id) # expired in 5 hours
-        if profile:
-            msg = Message(  subject='PASSWORD RESET',
+        if user:
+            msg = Message(  subject='S.H.I.F.T - PASSWORD RESET',
                             sender = "support@vnsboard.com",
                             recipients=[email]
                         )
-            msg.html = render_template('email/password_reset.html', username=user.username, token=user.get_user_token(18000), extend_body="")
-            try:
-                mail.send(msg)
-            except: 
-                pass
+            msg.html = render_template('email/password_reset.html', username=user.username, token=user.get_user_token(18000))
+            mail.send(msg)
+
     def new_user(username, password, email):
         msg = Message(  subject='WELCOME TO S.H.I.F.T',
                         sender = "support@vnsboard.com",
