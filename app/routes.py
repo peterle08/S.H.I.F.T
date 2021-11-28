@@ -451,7 +451,7 @@ def appointments():
 @app.route('/shift/all')
 @login_required
 def shift_all():
-    if current_user.is_authorized(['employee']) == False: abort(403)
+    if current_user.is_authorized(['supervisor']) == False: abort(403)
     employee = Fetch.employee_by_profile(current_user.profile_id)
     shift_list = Fetch.shift_by_supervisor(employee.supervise.supervisor_id)
     shifts =  []
@@ -492,9 +492,37 @@ def shift_all():
 @app.route('/shift/personal')
 @login_required
 def shift_personal():
-    # to add time to date:  str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
+    if current_user.is_authorized(['employee']) == False: abort(403)
+    shift_list = Fetch.shift_for_personali(current_user.profile.employee.id)
     shifts =  []
     events = []
+    index = 0
+    for shift in shift_list:
+        if (shift.Profile.preferred_name):
+            employee_name = shift.Profile.preferred_name
+        else: 
+            employee_name = shift.Profile.first_name
+        events.append(
+            {
+                'id' : str(index),
+                'title' : employee_name, #+ " at " + str(shift.Shift.start_time),
+                'start' : str(datetime.combine(shift.Shift.date, shift.Shift.start_time)),
+                'end' :  str(datetime.combine(shift.Shift.date, shift.Shift.end_time)),
+                'classNames': [ 'btn', 'btn-info' ],
+            }
+        )
+        # save shift to array of map 
+        shifts.append(
+            {
+                "employeeId": shift.Employee.id,
+                "employeeName":  employee_name,
+                "date": shift.Shift.date,
+                "start": str(shift.Shift.start_time),
+                "end": str(shift.Shift.end_time),
+                "status": shift.Shift.status
+            }
+        )
+        index += 1 # increase event_id
     return render_template('shift/personal.html', title="My Shift", events=events, shifts=shifts)
 
 #_________________________________
