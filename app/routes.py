@@ -1,3 +1,5 @@
+from typing import List
+from sqlalchemy.sql.elements import Null
 from app.token import verify_email_confirm_token
 
 from flask import render_template, redirect, url_for, request, json, abort
@@ -325,6 +327,19 @@ def view_employees():
                         Insert.supervisor(employee_id)
     courses = Course.query.all()
     return render_template('/employee/view.html', title="View Employees", employees=employees, form=form, role_form=role_form, profile_form=profile_form, courses=courses)
+
+
+
+
+@app.route('/students/view')
+def view_students():
+    if current_user.is_authorized(['admin']) == False: abort(403)
+    students = Student.query.all()
+    students_profs = []
+    for student in students:
+        students_profs.append( Fetch.user_by_profile(student.profile_id))
+    return render_template('/student/view.html', title="View Students", students_profs=students_profs)
+
 
 
 #============================== Calendar  ===================================
