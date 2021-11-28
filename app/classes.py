@@ -107,13 +107,12 @@ class Fetch:
     def user_by_profile(profile_id):
         return User.query.filter_by(profile_id=profile_id).first()
 
-    def shift_by_department(department_id):
-        return db.session.query(Shift, Employee, Profile)\
-                            .join(Employee, Shift.employee_id==Employee.id)\
-                            .join(Profile, Profile.id==Employee.profile_id)\
-                            .filter(Employee.department_id==department_id)\
-                            .order_by(Shift.date, Shift.start_time)\
-                            .all()
+    def shift_for_personal(employee_id):
+        return db.session.query(Shift, Profile, Employee)\
+                        .join(Employee, Employee.id==Shift.employee_id)\
+                        .join(Profile, Profile.id==Employee.profile_id)\
+                        .filter(Employee.id==employee_id)\
+                        .all()
 
     def employee_by_profile(profile_id):
         return Employee.query.filter_by(profile_id=profile_id).first()

@@ -177,24 +177,26 @@ def student_signup(email, token):
     departments = Department.query.all()
     profile = Fetch.profile_by_email(email)
     if request.method == "POST":
-        if profile == None and profile_form.validate_on_submit():
-            Insert.profile(profile_form)
-            profile = Fetch.profile_by_email(profile_form.email.data)
-        if user == None and form.validate_on_submit():
-            Insert.user(form.username.data, form.password.data, profile.id)
-            user = Fetch.user_by_username(form.username.data)
-            Email.new_user(form.username.data, form.password.data, profile.email)
-        if student == None:
-            department_id = request.form.get('department_id')
-            Insert.student(request.form.get('student_id'), department_id, profile.id)
-            if Role.query.filter_by(user_id=user.id, name="student").first() == None:
-                Insert.role(user.id, "student")
-            return redirect(url_for('login'))
-
+        if profile == None:
+            if profile_form.validate_on_submit():
+                Insert.profile(profile_form)
+                profile = Fetch.profile_by_email(profile_form.email.data)
+        else:
+            if user == None:
+                if form.validate_on_submit():
+                    Insert.user(form.username.data, form.password.data, profile.id)
+                    user = Fetch.user_by_username(form.username.data)
+                    Email.new_user(form.username.data, form.password.data, profile.email)
+            if student == None and user != None:
+                department_id = request.form.get('department_id')
+                Insert.student(request.form.get('student_id'), department_id, profile.id)
+                if Role.query.filter_by(user_id=user.id, name="student").first() == None:
+                    Insert.role(user.id, "student")
+                return redirect(url_for('login'))
     if profile:
         student = Student.query.filter_by(profile_id=profile.id).first()
-        user = Fetch.user_by_profile(profile.id)
-    return render_template('/student/new.html', title="Student Signup", email=email, form=form, profile_form=profile_form,
+        user = User.query.filter_by(profile_id=profile.id).first()
+    return render_template('/student/new.html', title="Student Signup", email=email, form=form, profile_form=profile_form, profile=profile,
                                      departments=departments, student=student, user=user)
 #_________________________________
 # Login-required: yes (student do not required to login)
@@ -451,7 +453,7 @@ def appointments():
 def shift_all():
     if current_user.is_authorized(['employee']) == False: abort(403)
     employee = Fetch.employee_by_profile(current_user.profile_id)
-    shift_list = Fetch.shift_by_department(employee.department_id)
+    shift_list = Fetch.shift_by_supervisor(employee.supervise.supervisor_id)
     shifts =  []
     events = []
     index = 0

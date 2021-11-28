@@ -3,6 +3,16 @@
 {% else: %}
     {% extends "/base/public.html" %}
 {% endif %}
+
+{% block head %}
+    <style>
+        label{
+            width: 150px;
+        }
+    </style>
+{% endblock %}
+
+
 {% block content %}
 <div class="container">
     <div class="m-auto text-center border border-info rounded-lg p-2">
@@ -55,15 +65,33 @@
             <div class="form-group">
                 <button type="submit" class="btn btn-outline-info w-100">Next</button>
             </div>
-            <hr>
         </form>
+        {% else %}
         <hr>
-        {% endif %} 
         <form action="" method="POST">
             {% if user == None %}
                 {{ form.hidden_tag() }}
-                {{ form.username.label()}}
-                {{ form.username(class="form-control", placeholder="Create your username") }}
+                <div class="form-group">
+                    <div class="form-inline">
+                        {{ form.username.label()}}
+                        {{ form.username(class="form-control", placeholder="Create your username") }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-inline">
+                        {{ form.password.label()}}
+                        {{ form.password(class="form-control", placeholder="Password") }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-inline">
+                        {{ form.confirm_password.label()}}
+                        {{ form.confirm_password(class="form-control", placeholder="confirm password") }}
+                        {% for error in form.confirm_password.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
         
                 {% for error in form.username.errors %}
                 <span style="color: red;">{{ error }}</span>
@@ -92,7 +120,8 @@
             {% endif %}
                 <hr>
                 <button class="btn btn-outline-primary" type="submit">Sign Up</button>
-            </form>
+        </form>
+        {% endif %} 
     </div>
 </div>
 
