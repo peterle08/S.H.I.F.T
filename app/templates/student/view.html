@@ -1,0 +1,60 @@
+{% extends "/base/auth.html" %}
+
+<style>
+    tr:nth-child(even) {
+        background-color: #def2f1;
+    }
+</style>
+
+{% block content %}
+<div class="container">
+    <table class="table">
+        <tbody>
+            <tr style="border: 1px; background-color: #3aafa9; color:#17252a;">
+                <th>Student</th>
+            </tr>
+            {% for prof in students_profs: 
+
+                %}
+            <tr onclick="view_modal('{{prof.username}}')" data-toggle="modal" data-target="#myModal">
+                <td>{{prof.username}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+    <!-- The Modal -->
+    <div class="modal" id="myModal">
+        <div class="modal-dialog">
+        <div class="modal-content">
+        
+            <!-- Modal Header -->
+            <div class="modal-header">
+            <h4 class="modal-title">Modal Heading</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            
+            <!-- Modal body -->
+            <div class="modal-body">
+                <input id="username">
+            </div>
+            
+            <!-- Modal footer -->
+            <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+            
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    function view_modal(username){
+        document.getElementById("username").value = username;
+    }
+</script>
+{% endblock %}
