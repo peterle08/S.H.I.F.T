@@ -493,7 +493,7 @@ def shift_all():
 @login_required
 def shift_personal():
     if current_user.is_authorized(['employee']) == False: abort(403)
-    shift_list = Fetch.shift_for_personali(current_user.profile.employee.id)
+    shift_list = Fetch.shift_for_personal(current_user.profile.employee.id)
     shifts =  []
     events = []
     index = 0
