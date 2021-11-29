@@ -67,3 +67,17 @@ class Email:
             mail.send(msg)
         except:
             pass
+    
+    def new_schedule_alert(employee_id):
+        employee = Fetch.employee_by_id(employee_id)
+        email = employee.profile.email
+        subject = "SHIFT - NEW SCHEDULE"
+        msg = Message(  subject=subject,
+                sender = "support@vnsboard.com",
+                recipients=[email]
+            )
+        msg.html = render_template('email/swap_approval.html')
+        try:
+            mail.send(msg)
+        except:
+            pass

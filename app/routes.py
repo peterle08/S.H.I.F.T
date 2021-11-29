@@ -315,7 +315,8 @@ def view_employees():
         if request.form.get("action") == "shift":
             if form.validate_on_submit():
                 Insert.schedule(form)
-                employees = Employee.query.all() 
+                Email.new_schedule_alert(form.employee_id.data)
+                employees = Employee.query.all()
                 return redirect(url_for('view_employees'))
         else:
             if role_form.validate_on_submit():
