@@ -291,3 +291,6 @@ class Delete:
     def appointment(date, start_time, student_id)  :
         Appointment.query.filter_by(date=date, start_time=start_time, student_id=student_id).delete()
         db.session.commit()
+    def shift(employee_id ,date, start_time):
+        Shift.query.filter_by(date=date, start_time=start_time, employee_id=employee_id).delete()
+        db.session.commit()

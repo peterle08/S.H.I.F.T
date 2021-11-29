@@ -3,7 +3,7 @@ from flask_mail import Message
 from flask import render_template
 from app.classes import Fetch
 from app import mail
-from app.token import generate_email_confirm_token, verify_email_confirm_token
+from app.token import generate_email_confirm_token
 
 class Email:
     def password_reset(email):
