@@ -32,9 +32,10 @@
                 )
                 // show shift in formation
                 document.getElementById("labelName").innerHTML = shifts[id]["employeeName"];
-                document.getElementById("labelDate").innerHTML = shifts[id]["date"];
-                document.getElementById("labelStartTime").innerHTML = shifts[id]["start"];
-                document.getElementById("labelEndTime").innerHTML = shifts[id]["end"];
+                document.getElementById("labelDate").value = shifts[id]["date"];
+                document.getElementById("labelStartTime").value = shifts[id]["start"];
+                document.getElementById("labelEndTime").value = shifts[id]["end"];
+                document.getElementById("employeeId").value = shifts[id]["employeeId"];
                 document.getElementById("labelStatus").innerHTML = shifts[id]["status"];
             },
         });

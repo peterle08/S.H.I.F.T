@@ -1,5 +1,3 @@
-from typing import List
-from sqlalchemy.sql.elements import Null
 from app.token import verify_email_confirm_token
 
 from flask import render_template, redirect, url_for, request, json, abort
@@ -15,7 +13,7 @@ from app.forms import AddRoleForm, LoginForm, NewUserForm, ProfileForm, AddUserF
                         AddShiftForm, AddAppointmentForm
 from app.email import Email
 from app import app
-from app.models import Appointment, Course, Profile, Supervise, Supervisor, Swap, User, Department, Student, Role, Employee, Walkin
+from app.models import Appointment, Course, Profile, Supervisor, Swap, User, Department, Student, Role, Employee, Walkin
 
 #_________________________________
 # Login-required: yes
@@ -185,9 +183,11 @@ def student_signup(email, token):
             if user == None:
                 if form.validate_on_submit():
                     Insert.user(form.username.data, form.password.data, profile.id)
-                    user = Fetch.user_by_username(form.username.data)
                     Email.new_user(form.username.data, form.password.data, profile.email)
-            if student == None and user != None:
+                    user = Fetch.user_by_username(form.username.data)
+            else:
+                user = User.query.filter_by(profile_id=profile.id).first()
+            if student == None and user:
                 department_id = request.form.get('department_id')
                 Insert.student(request.form.get('student_id'), department_id, profile.id)
                 if Role.query.filter_by(user_id=user.id, name="student").first() == None:
@@ -456,6 +456,10 @@ def shift_all():
     shift_list = Fetch.shift_by_supervisor(employee.supervise.supervisor_id)
     shifts =  []
     events = []
+    if request.method == "POST":
+        Delete.shift(request.form.get('employee_id'), request.form.get('date'), request.form.get('start_time'))
+        shift_list = Fetch.shift_by_supervisor(employee.supervise.supervisor_id)
+    
     index = 0
     for shift in shift_list:
         if (shift.Profile.preferred_name):
