@@ -166,6 +166,8 @@ class Fetch:
                         .join(Supervise, Supervise.employee_id==Employee.id)\
                         .filter(Supervise.supervisor_id==supervisor_id, or_(Swap.status=="pending", Swap.status=="accepted"))\
                         .order_by(Swap.from_date).all()  
+    def employee_by_id(employee_id):
+        return Employee.query.filter_by(id=employee_id).first()
 
 class Insert:
     def appointment(form):
