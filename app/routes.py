@@ -248,7 +248,8 @@ def add_student(profile_id):
             Insert.student(request.form.get('student_id'), department_id, profile_id)
         if Role.query.filter_by(user_id=user.id, name="student").first() == None:
             Insert.role(user.id, "student")
-        return redirect(url_for('start_walkin', department_id=department_id))
+
+        return redirect(url_for('start_walkin', department_id=Function.string_to_hex((department_id + "this1saFreakingStudpidwayt0decode$$Gotokillyourself"))))
 
     return render_template('/student/add.html', title="Add User", form=form, departments=departments, student=student, user=user)
 
