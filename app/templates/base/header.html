@@ -8,7 +8,10 @@
         Menu
       </button>
       <ul class="nav_wrapper">
+        {% if current_user.is_anonymous %}
         <li class="nav_item"><a href="{{url_for('login')}}">Login</a></li>
+        {% endif %}
+        <li class="nav_item"><a href="{{url_for('get_walkin_link')}}">Get Link</a></li>
         <li class="nav_item"><a href="{{url_for('student_verify_email')}}">Student Sign-Up</a></li>
       </ul>
     </nav>

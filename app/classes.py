@@ -65,6 +65,12 @@ class Function:
         accepter_shift.employee_id = swap.requester_id
         db.session.commit()
 
+    def string_to_hex(s):
+        return s.encode('utf-8').hex()
+
+    def hex_to_string(hex):
+        return bytes.fromhex(hex).decode('utf-8')
+
 class Update:
     def password(user, password):   # update password
         user.set_password(password)

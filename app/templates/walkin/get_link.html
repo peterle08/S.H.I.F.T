@@ -1,0 +1,64 @@
+{% extends "/base/public.html" %}
+
+{% block head %}
+    <style>
+        .resize{
+            text-align: center;
+            margin: auto;
+            position: absolute;
+            width: 450px;
+            z-index: -1;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+<img src="/static/images/kent/kentLogo.png" alt="kentLogo" class="resize">
+</div>
+<p style="height: 100px;"></p>
+<div class="container-sm mt-5">
+    <div class=" bg-shift-transparent m-auto col-12 col-md-8 shadow-lg rounded-xlg">
+        <p style="height: 50px;"></p>
+        <form action="" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text fa fa-user text-info"></span>
+                </div>
+                {{ form.username(class="form-control", placeholder="Username") }}
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text fa fa-key text-info"></span>
+                </div>
+                {{ form.password(class="form-control", placeholder="Password") }}
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text fa fa-building text-info"></span>
+                </div>
+                <select name="department_id" class="form-control" required>
+                    <option value="" selected disabled>SELECT DEPARMENT</option>
+                    <option disabled>---------------</option>
+                {% for department in departments %}
+                    <option value="{{department.id}}">{{department.name}} ({{department.location}})</option>
+                {% endfor %}
+                </select>
+            </div>           
+        {% for error in form.username.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        <hr>
+            <button type="submit" class="btn btn-danger w-100 mb-3">Submit</button>
+        </form>
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    
+</script>
+{% endblock %}

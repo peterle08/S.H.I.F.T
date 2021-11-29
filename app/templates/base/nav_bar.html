@@ -4,9 +4,11 @@
     </a>
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav">
+            {% if current_user.is_authorized(["employee"]) %}
             <li class="nav-item">
-              <a href="{{url_for('shift_personal')}}" class="nav-link" >My Calendar</a>
+              <a href="{{url_for('shift_personal')}}" class="nav-link" >My Schedule</a>
             </li>
+            {% endif %}
             <li class="nav-item">
               <a href="{{url_for('appointments',)}}" class="nav-link text-decoration-none" >Appointment</a>
             </li>
