@@ -454,7 +454,8 @@ def appointments():
 def shift_all():
     if current_user.is_authorized(['supervisor']) == False: abort(403)
     employee = Fetch.employee_by_profile(current_user.profile_id)
-    shift_list = Fetch.shift_by_supervisor(employee.supervise.supervisor_id)
+    supervise = Fetch.supervise_by_employee(employee.id)
+    shift_list = Fetch.shift_by_supervisor(supervise.supervisor_id)
     shifts =  []
     events = []
     if request.method == "POST":
@@ -498,7 +499,7 @@ def shift_all():
 @login_required
 def shift_personal():
     if current_user.is_authorized(['employee']) == False: abort(403)
-    shift_list = Fetch.shift_for_personali(current_user.profile.employee.id)
+    shift_list = Fetch.shift_for_personal(current_user.profile.employee.id)
     shifts =  []
     events = []
     index = 0

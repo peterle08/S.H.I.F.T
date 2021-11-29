@@ -169,6 +169,10 @@ class Fetch:
     def employee_by_id(employee_id):
         return Employee.query.filter_by(id=employee_id).first()
 
+    def supervise_by_employee(employee_id):
+        return Supervise.query.filter_by(employee_id=employee_id).first()
+
+
 class Insert:
     def appointment(form):
         stmt = Appointment(date=form.date.data, start_time=form.start_time.data, end_time=form.end_time.data, 
