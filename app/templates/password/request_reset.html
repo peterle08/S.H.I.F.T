@@ -14,7 +14,7 @@
                     {{ form.email(class="form-control", placeholder="Please Enter Your Email") }}
                 </div>
             </div>
-
+            <h4 class="text-danger">{{notice}}</h4>
             {% for error in form.email.errors %}
             <span style="color: red;">{{ error }}</span>
             {% endfor %}
@@ -23,7 +23,6 @@
             </div>
         </form>
     </div>
-    <h4 class="text-danger">{{notice}}</h4>
 </div>
 
 

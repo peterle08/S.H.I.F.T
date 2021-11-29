@@ -1,7 +1,7 @@
 {% extends "/base/auth.html" %}
 
 {% block content %}
-<div class="container" style="height: 100vh;">
+<div class="w-100 text-center m-2" style="height: 100vh;">
     <div class="m-auto p-5 border border-info rounded-lg">
         {% if current_user.is_authorized(["admin"]) %}
         <h4>Administrator</h4>

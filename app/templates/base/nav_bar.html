@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-md">
+    <a class="navbar-brand" href="{{url_for('dashboard')}}">
+        <img src="/static/images/logo/logoOnly.png" alt="S.H.I.F.T" style="width:40px;">
+    </a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+              <a href="{{url_for('shift_personal')}}" class="nav-link" >My Calendar</a>
+            </li>
+            <li class="nav-item">
+              <a href="{{url_for('appointments',)}}" class="nav-link text-decoration-none" >Appointment</a>
+            </li>
+            {% if current_user.is_authorized(["supervisor", "assistant"]) %}
+            <li class="nav-item">
+                <a href="{{url_for('view_walkin')}}" class="nav-link text-decoration-none" >Drop-in</a>
+              </li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="dropdown dropleft">
+        <button type="button" class="dropdown-toggle btn btn-outline-info" data-toggle="dropdown" >
+            <span class="fa fa-bars"></span>
+        </button>
+        <div class="dropdown-menu">
+            <a href="{{url_for('shift_personal')}}" class="dropdown-item" >My Calendar</a>
+            <a href="{{url_for('appointments')}}" class="dropdown-item" >Appointment</a>
+            <div class="dropdown-divider"></div>
+        {% if current_user.is_authorized(["admin"]) %}
+            <a href="{{url_for('view_user')}}" class="dropdown-item" >Users</a>
+            <a href="{{url_for('view_employees')}}" class="dropdown-item" >Employees</a>
+            <a href="#" class="dropdown-item" >Students</a>
+            <a href="#" class="dropdown-item" >Maintenance</a>
+        {% endif %}
+        {% if current_user.is_authorized(["employee"]) %}
+            <a href="{{url_for('shift_all')}}" class="dropdown-item" >All Schedule</a>
+        {% endif %}
+        {% if current_user.is_authorized(["supervisor"]) %}
+            <a href="#" class="dropdown-item" >Shift Swap Request</a>
+            <a href="#" class="dropdown-item" >My Staffs</a>
+            <a href="#" class="dropdown-item" >Walkin</a>
+        {% endif %}
+        {% if current_user.is_authorized(["student"]) %}
+            <a href="#" class="dropdown-item" >Tutor Availability</a>
+        {% endif %}
+            <a href="{{url_for('view_profile')}}" class="dropdown-item" >My Profile</a>
+            <a href="#" class="dropdown-item" >Setting</a>
+            <div class="dropdown-divider"></div>
+        {% if current_user.is_authenticated %}
+            <a class="dropdown-item" href="{{url_for('logout')}}">Logout</a>
+        {% endif %}
+        </div>
+    </div>  
+  </nav>

@@ -76,7 +76,7 @@ class Email:
                 sender = "support@vnsboard.com",
                 recipients=[email]
             )
-        msg.html = render_template('email/new_schedule.html', name=employee.profile.name)
+        msg.html = render_template('email/new_schedule.html', name=employee.profile.first_name)
         try:
             mail.send(msg)
         except:
