@@ -5,7 +5,7 @@ import string
 import random
 from datetime import timedelta
 from sqlalchemy import func, and_, or_
-from app.models import Appointment, Swap, Student, Supervise, Supervisor, Swap, User, Profile, Setting, Role, Employee, Walkin, Shift, Tutor, Course
+from app.models import Appointment, Department, Swap, Student, Supervise, Supervisor, Swap, User, Profile, Setting, Role, Employee, Walkin, Shift, Tutor, Course
 from app import db
 
 class Function:
@@ -177,6 +177,9 @@ class Fetch:
 
     def supervise_by_employee(employee_id):
         return Supervise.query.filter_by(employee_id=employee_id).first()
+
+    def walkin_by_departmentid(department_id):
+         return Walkin.query.filter_by(department_id=department_id).all()   
 
 
 class Insert:

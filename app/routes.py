@@ -22,8 +22,15 @@ from app.models import Appointment, Course, Profile, Supervisor, Swap, User, Dep
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # 
-    return render_template('/dashboard/main.html', title="Dashboard", year=datetime.now().year)
+    if current_user.is_authorized(['supervisor']) == True:
+        employee = Fetch.employee_by_profile(current_user.id)
+        total_appointments_for_departemnt = Fetch.appointmentby_department(employee.department_id)
+        totalappt = len(total_appointments_for_departemnt)
+        total_walkins_by_department = Fetch.walkin_by_departmentid(employee.department_id)
+        totalwalks= len(total_walkins_by_department)
+        return render_template('/dashboard/main.html', title="Dashboard", year=datetime.now().year, totalappt = totalappt, totalwalks=totalwalks)
+    else:
+        return render_template('/dashboard/main.html', title="Dashboard", year=datetime.now().year)
 
 #============================== Department =================================
 # Login-required: yes
