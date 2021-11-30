@@ -28,7 +28,7 @@
                     <a class="dropdown-item" href="{{url_for('view_swap_request')}}">Swap Request</a>
                 {% endif %}
                 {% if current_user.is_authorized(["student"]) %}
-                    <a class="dropdown-item" href="{{url_for('tutor_availability')}}">Tutor Availability</a>
+                    <a class="dropdown-item" href="{{url_for('tutor_availability', student_id=current_user.profile.student.id)}}">Tutor Availability</a>
                 {% endif %}
                 {% if current_user.is_authorized(["supervisor", "assistant"]) %}
                     <a class="dropdown-item" href="{{url_for('view_walkin')}}" >Drop-in</a>
