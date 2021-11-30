@@ -29,7 +29,7 @@
         <div class="mb-3 row">
             <a href="{{url_for('shift_all')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">View All Schedule</a>
             {% if current_user.is_authorized(["supervisor"]) %}
-            <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Shift Swap Request</a>
+            <a href="{{url_for('request_shift_swap')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Shift Swap Request</a>
             <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">My Staffs</a>
             <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Walkin</a>
             {% endif %}

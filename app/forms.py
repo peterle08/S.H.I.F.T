@@ -180,7 +180,7 @@ class GetWalkinLinkForm(FlaskForm):
     def validate_username(self, username):
         user = Fetch.user_by_username(username.data)
         if user and user.check_password(self.password.data):
-            if user.status != "inactive" and user.is_authorized["assistant", "supervisor"]:
+            if user.status != "inactive" and user.is_authorized(["assistant", "supervisor"]):
                 pass
             else:
                 ValidationError('Un-authorized access! Please contact the Admin to get more information')
