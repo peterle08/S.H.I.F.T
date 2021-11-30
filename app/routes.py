@@ -207,7 +207,7 @@ def student_signup(email, token):
 @app.route('/walkin/start/<department_id>',methods=['GET', 'POST'])
 def start_walkin(department_id):
     ENCODED_DEPARTMENT = department_id
-    department_id = Function.hex_to_string(department_id) - "this1saFreakingStudpidwayt0decode$$Gotokillyourself"
+    department_id = Function.hex_to_string(department_id)
     form = WalkinForm()
     student = None
     profile = None
@@ -670,7 +670,7 @@ def get_walkin_link():
     form = GetWalkinLinkForm()
     departments = Department.query.all()
     if form.validate_on_submit():
-        encoded_department = Function.string_to_hex((request.form.get('department_id') + "this1saFreakingStudpidwayt0decode$$Gotokillyourself"))
+        encoded_department = Function.string_to_hex((request.form.get('department_id')) + "this1saFreakingStudpidwayt0decode$$Gotokillyourself")
         return redirect(url_for('start_walkin', department_id=encoded_department))
 
     return render_template('walkin/get_link.html', title="Walkin", form=form, departments=departments)
