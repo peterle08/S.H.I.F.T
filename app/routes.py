@@ -207,7 +207,7 @@ def student_signup(email, token):
 @app.route('/walkin/start/<department_id>',methods=['GET', 'POST'])
 def start_walkin(department_id):
     ENCODED_DEPARTMENT = department_id
-    department_id = Function.hex_to_string(department_id)
+    department_id = Function.hex_to_string(department_id)[:-51]
     form = WalkinForm()
     student = None
     profile = None
