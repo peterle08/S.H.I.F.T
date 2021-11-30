@@ -30,10 +30,17 @@
             <a href="{{url_for('shift_all')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">View All Schedule</a>
             {% if current_user.is_authorized(["supervisor"]) %}
             <a href="{{url_for('request_shift_swap')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Shift Swap Request</a>
-            <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">My Staffs</a>
-            <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Walkin</a>
+            <a href="{{url_for('view_employees')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">My Staffs</a>
+            <a href="{{url_for('get_walkin_link')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Walkin</a>
+
             {% endif %}
         </div>
+
+        {% if current_user.is_authorized(["supervisor"]) %}
+        <h4> Total Appointments for this Department: {{totalappt}}</h4>
+        <h4> Total Walkins for this Department: {{totalwalks}}</h4>
+        {% endif %}
+
         {% endif %}
         {% if current_user.is_authorized(["student"]) %}
         <h4>Student</h4>
