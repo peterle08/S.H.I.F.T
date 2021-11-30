@@ -2,10 +2,11 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{url_for('static', filename='css/login.css') }}"/>
+<link rel="stylesheet" href="../../static/css/nav.css" />
 {% endblock %}
 
 {% block content %}
-
+{% include '/base/header.html' %}
 <div class="d-flex flex-wrap align-content-center p-2" style="height: 100vh;">
     <div class="m-auto p-5 border border-info rounded-lg">
         <img src="{{url_for('static', filename='images/logo/logo.png')}}" />
@@ -54,5 +55,5 @@
 {% endblock %}
 
 {% block script %}
-
+<script src="../../static/js/header.js"></script>
 {% endblock %}

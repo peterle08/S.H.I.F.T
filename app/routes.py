@@ -9,7 +9,7 @@ from datetime import date, datetime
 
 from app.classes import Fetch, Function, Insert, Update, Delete
 
-from app.forms import AddRoleForm, LoginForm, NewUserForm, ProfileForm, AddUserForm, RequestShiftSwapForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
+from app.forms import AddRoleForm, GetWalkinLinkForm, LoginForm, NewUserForm, ProfileForm, AddUserForm, RequestShiftSwapForm, WalkinForm, EmailForm, PasswordForm, EditProfileForm,\
                         AddShiftForm, AddAppointmentForm
 from app.email import Email
 from app import app
@@ -22,6 +22,7 @@ from app.models import Appointment, Course, Profile, Supervisor, Swap, User, Dep
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    # 
     return render_template('/dashboard/main.html', title="Dashboard", year=datetime.now().year)
 
 #============================== Department =================================
@@ -203,8 +204,10 @@ def student_signup(email, token):
 # parameter:
 # role:
 # Description: if existing student -> checkin, else: redirect to validate profile
-@app.route('/<department_id>/walkin/start',methods=['GET', 'POST'])
+@app.route('/walkin/start/<department_id>',methods=['GET', 'POST'])
 def start_walkin(department_id):
+    ENCODED_DEPARTMENT = department_id
+    department_id = Function.hex_to_string(department_id) - "this1saFreakingStudpidwayt0decode$$Gotokillyourself"
     form = WalkinForm()
     student = None
     profile = None
@@ -219,9 +222,8 @@ def start_walkin(department_id):
                 return redirect(url_for('validate_profile', email=form.email.data))
             if form.purpose.data:
                 Insert.walkin(department_id, student.id, form.purpose.data, datetime.now(), "w", None)
-                return redirect(url_for('start_walkin', department_id=department_id))
+                return redirect(url_for('start_walkin', department_id=ENCODED_DEPARTMENT))
     return render_template('/walkin/start.html', title="Start Walkin", form=form, student=student, department=department)
-
 
 #_________________________________
 # Login-required: yes
@@ -246,7 +248,8 @@ def add_student(profile_id):
             Insert.student(request.form.get('student_id'), department_id, profile_id)
         if Role.query.filter_by(user_id=user.id, name="student").first() == None:
             Insert.role(user.id, "student")
-        return redirect(url_for('start_walkin', department_id=department_id))
+
+        return redirect(url_for('start_walkin', department_id=Function.string_to_hex((department_id + "this1saFreakingStudpidwayt0decode$$Gotokillyourself"))))
 
     return render_template('/student/add.html', title="Add User", form=form, departments=departments, student=student, user=user)
 
@@ -331,9 +334,9 @@ def view_employees():
     courses = Course.query.all()
     return render_template('/employee/view.html', title="View Employees", employees=employees, form=form, role_form=role_form, profile_form=profile_form, courses=courses)
 
-
-
-
+# Login-required: yes
+# parameter:
+# Description: view students
 @app.route('/students/view')
 def view_students():
     if current_user.is_authorized(['admin']) == False: abort(403)
@@ -657,3 +660,17 @@ def view_walkin():
             Update.walkin_status(walkin[index], "d")
             walkin = Walkin.query.filter_by(department_id=department_id, status="w").order_by(Walkin.time_stamp).all()
     return render_template('walkin/view.html', title="Walkin", walkin=walkin, picked_date=picked_date)
+
+# Login-required: yes
+# Role: assistant & supervisor
+# parameter:
+# Description: view walkin/dropin
+@app.route('/go/walkin', methods=['GET', 'POST'])
+def get_walkin_link():
+    form = GetWalkinLinkForm()
+    departments = Department.query.all()
+    if form.validate_on_submit():
+        encoded_department = Function.string_to_hex((request.form.get('department_id') + "this1saFreakingStudpidwayt0decode$$Gotokillyourself"))
+        return redirect(url_for('start_walkin', department_id=encoded_department))
+
+    return render_template('walkin/get_link.html', title="Walkin", form=form, departments=departments)

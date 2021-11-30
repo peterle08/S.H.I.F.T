@@ -173,7 +173,19 @@ class RequestShiftSwapForm(FlaskForm):
             if self.to_time.data >= shift.start_time and self.to_time.data <= shift.end_time:
                 raise ValidationError("Cannot accept the request: Time conflict on " + str(to_date.data) + " at " + str(self.to_time.data))
        
-    
+class GetWalkinLinkForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()], render_kw={'autofocus': True})
+    password = PasswordField('Password', validators=[DataRequired()])
+
+    def validate_username(self, username):
+        user = Fetch.user_by_username(username.data)
+        if user and user.check_password(self.password.data):
+            if user.status != "inactive" and user.is_authorized["assistant", "supervisor"]:
+                pass
+            else:
+                ValidationError('Un-authorized access! Please contact the Admin to get more information')
+        else:
+            raise ValidationError('Invalid username or password! Please try again!')
     
     
 
