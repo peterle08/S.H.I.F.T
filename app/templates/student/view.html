@@ -1,23 +1,29 @@
 {% extends "/base/auth.html" %}
 
+{% block head %}
 <style>
+    .label{
+        width: 150px;
+    }
     tr:nth-child(even) {
         background-color: #def2f1;
     }
 </style>
+{% endblock %} 
 
 {% block content %}
 <div class="container">
     <table class="table">
         <tbody>
-            <tr style="border: 1px; background-color: #3aafa9; color:#17252a;">
-                <th>Student</th>
-            </tr>
-            {% for prof in students_profs: 
-
-                %}
-            <tr onclick="view_modal('{{prof.username}}')" data-toggle="modal" data-target="#myModal">
-                <td>{{prof.username}}</td>
+            <thead style="border: 1px; background-color: #3aafa9; color:#17252a;"> 
+                <th>SID</th>
+                <th>Name</th>
+            </thead>
+            {% for prof in students_profs:%}
+            <tr onclick="view_modal('{{prof.username}}', '{{prof.profile.student.id}}', '{{prof.profile.first_name}}', '{{prof.profile.email}}', '{{prof.profile.phone}}')" 
+                    data-toggle="modal" data-target="#myModal">
+                <td>{{prof.profile.student.id}}</td>
+                <td>{{prof.profile.first_name}} {{prof.profile.last_name}}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -32,15 +38,25 @@
         
             <!-- Modal Header -->
             <div class="modal-header">
-            <h4 class="modal-title">Modal Heading</h4>
+            <h4 class="modal-title" id="studentName"></h4>
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             
             <!-- Modal body -->
             <div class="modal-body">
-                <input id="username">
+                <div class="row">
+                    <label class="label">SID</label>
+                    <label id="sid"></label>
+                </div>
+                <div class="row">
+                    <label class="label">Email:</label>
+                    <label id="email"></label>
+                </div>
+                <div class="row">
+                    <label class="label">Phone:</label>
+                    <label id="phone"></label>
+                </div>
             </div>
-            
             <!-- Modal footer -->
             <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -53,8 +69,11 @@
 
 {% block script %}
 <script>
-    function view_modal(username){
-        document.getElementById("username").value = username;
+    function view_modal(username, sid, name, email, phone){
+        document.getElementById("studentName").innerHTML = name + " - " + username;
+        document.getElementById("sid").innerHTML = sid;
+        document.getElementById("email").innerHTML = email;
+        document.getElementById("phone").innerHTML = phone;
     }
 </script>
 {% endblock %}
