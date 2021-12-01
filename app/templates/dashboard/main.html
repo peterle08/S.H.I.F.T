@@ -5,7 +5,6 @@
     #bashboarMenu a{
         height: 50px;
         font-size: large;
-        text-align: center;
     }
 </style>
 {% endblock%}
@@ -28,11 +27,11 @@
         <h4>Work Schedule</h4>
         <hr>
         <div class="mb-3 row">
-            <a href="{{url_for('shift_all')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">View All Schedule</a>
+            <a href="{{url_for('shift_all')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2 text-center">View All Schedule</a>
             {% if current_user.is_authorized(["supervisor"]) %}
-            <a href="{{url_for('request_shift_swap')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Shift Swap Request</a>
-            <a href="{{url_for('view_employees')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">My Staffs</a>
-            <a href="{{url_for('get_walkin_link')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Walkin</a>
+            <a href="{{url_for('request_shift_swap')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2 text-center">Shift Swap Request</a>
+            <a href="{{url_for('view_employees')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2 text-center">My Staffs</a>
+            <a href="{{url_for('get_walkin_link')}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2 text-center">Walkin</a>
 
             {% endif %}
         </div>
@@ -47,7 +46,7 @@
         <h4>Student</h4>
         <hr>
         <div class="mb-3 row">
-            <a href="#" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2">Tutor Availability</a>
+            <a href="{{url_for('tutor_availability', student_id=current_user.profile.student.id)}}" class="m-auto btn btn-outline-info col-sm-4 col-md-4 col-lg-2 text-center">Tutor Availability</a>
         </div>
         {% endif %}
     </div>

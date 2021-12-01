@@ -290,7 +290,9 @@ def add_employee(profile_id):
             Insert.employee(employee_id, request.form.get('department_id'), request.form.get('wage'), profile_id)
         if Role.query.filter_by(user_id=user.id, name="employee").first() == None:
             Insert.role(user.id, "employee")
-            Insert.supervise(request.form.get('supervisor_id'), employee_id)
+            supervisor_id = request.form.get('supervisor_id')
+            if supervisor_id:
+                Insert.supervise(supervisor_id, employee_id)
         roles = request.form.getlist('role')
         for role in roles:
             if Role.query.filter_by(user_id=user.id, name=role).first() == None:
@@ -346,7 +348,7 @@ def view_employees():
 # Description: view students
 @app.route('/students/view')
 def view_students():
-    if current_user.is_authorized(['admin']) == False: abort(403)
+    if current_user.is_authorized(['admin', 'supervisor']) == False: abort(403)
     students = Student.query.all()
     students_profs = []
     for student in students:
