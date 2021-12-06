@@ -24,9 +24,7 @@ from app.models import Appointment, Course, Profile, Supervisor, Swap, User, Dep
 def dashboard():
     if current_user.is_authorized(['supervisor']) == True:
         employee = Fetch.employee_by_profile(current_user.profile.id)
-        print(employee)
         total_appointments_for_departemnt = Fetch.appointmentby_department(employee.department_id)
-        print("test1")
         totalappt = len(total_appointments_for_departemnt)
         total_walkins_by_department = Fetch.walkin_by_departmentid(employee.department_id)
         totalwalks= len(total_walkins_by_department)
@@ -496,7 +494,7 @@ def shift_all():
             {
                 "employeeId": shift.Employee.id,
                 "employeeName":  employee_name,
-                "date": shift.Shift.date,
+                "date": str(shift.Shift.date),
                 "start": str(shift.Shift.start_time),
                 "end": str(shift.Shift.end_time),
                 "status": shift.Shift.status
@@ -622,7 +620,10 @@ def request_shift_swap():
 @login_required
 def view_swap_request():
     if not current_user.is_authorized(['employee']): abort(403)
-    swaps = None
+    if current_user.is_authorized(['supervisor']):
+        swaps = Fetch.swap_request_by_supervisor(current_user.profile.employee.id)
+    else:
+        swaps = Swap.query.filter_by(requester_id=current_user.profile.employee.id, status="pending").all()
     # swaps = Swap.query.all() # for testing
     if request.method == "POST":
         for_action = request.form.get('action')

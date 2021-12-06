@@ -60,7 +60,7 @@ class Function:
 
     def swap_shift(swap):
         requester_shift = Shift.query.filter_by(employee_id=swap.requester_id, date=swap.from_date, start_time=swap.from_time).first()
-        accepter_shift = Shift.query.filter_by(employee_id=swap.accepter, date=swap.to_date, start_time=swap.to_time).first()
+        accepter_shift = Shift.query.filter_by(employee_id=swap.accepter_id, date=swap.to_date, start_time=swap.to_time).first()
         requester_shift.employee_id = swap.accepter_id
         accepter_shift.employee_id = swap.requester_id
         db.session.commit()
@@ -295,7 +295,7 @@ class Insert:
     def swap_request(form):
         db.session.add(Swap(requester_id=form.requester_id.data, accepter_id=form.accepter_id.data, 
                                         from_date=form.from_date.data, from_time=form.from_time.data,
-                                        to_date=form.to_date.data, to_time=form.from_time.data, status="pending"))
+                                        to_date=form.to_date.data, to_time=form.to_time.data, status="pending"))
         db.session.commit()
 
 class Delete:
