@@ -23,8 +23,10 @@ from app.models import Appointment, Course, Profile, Supervisor, Swap, User, Dep
 @login_required
 def dashboard():
     if current_user.is_authorized(['supervisor']) == True:
-        employee = Fetch.employee_by_profile(current_user.id)
+        employee = Fetch.employee_by_profile(current_user.profile.id)
+        print(employee)
         total_appointments_for_departemnt = Fetch.appointmentby_department(employee.department_id)
+        print("test1")
         totalappt = len(total_appointments_for_departemnt)
         total_walkins_by_department = Fetch.walkin_by_departmentid(employee.department_id)
         totalwalks= len(total_walkins_by_department)
